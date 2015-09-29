@@ -4,5 +4,6 @@
 		<jta-data-source>java:jboss/datasources/PostgreSQLDS</jta-data-source>
 		<class>com.sapo.entities.Administrador</class>
 		<class>com.sapo.entities.Usuario</class>
+		<class>com.sapo.entities.Persona</class>
 	</persistence-unit>
 </persistence>
