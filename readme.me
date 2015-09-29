@@ -1,0 +1,33 @@
+Para crear la base y el esquema deben ejecutar el script db en la raíz del proyecto.
+
+Descargar el proyecto:
+git clone https://github.com/leokraken/sapoREST.git
+
+#navegar al directorio
+cd sapoREST
+
+# Base de datos
+# tener postgreSQL instalado (sudo apt-get install postgresql )
+# tener permisos de conexión mediante socket local.
+# Ejecutar el script para crear la base.
+chmod 750 db.sh
+./db.sh
+
+# también se puede hacer desde pgadmin.
+
+
+# Servidor web
+# Descargarlo del drive link:
+# descomprimir y ejecutar servidor
+tar xzvf wildfly-9.0.1.Final.tar.gz
+cd wildfly-9.0.1.Final/bin
+./standalone.sh
+
+# Verificar que el Datasource es correcto
+# Login como admin console (wildfly/admin)
+
+
+
+
+
+
