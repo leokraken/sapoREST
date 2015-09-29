@@ -2,6 +2,9 @@ package com.sapo.entities;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 
 
@@ -23,10 +26,12 @@ public abstract class Categoria implements Serializable {
 	private String nombre;
 
 	//bi-directional many-to-one association to Producto
+	@JsonIgnore
 	@OneToMany(mappedBy="categoria")
 	private List<Producto> productos;
 
 	//bi-directional many-to-many association to Template
+	@JsonIgnore
 	@ManyToMany(mappedBy="categorias")
 	private List<Template> templates;
 
