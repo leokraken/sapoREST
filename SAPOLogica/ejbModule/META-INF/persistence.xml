@@ -3,7 +3,21 @@
 	<persistence-unit name="SAPOLogica">
 		<jta-data-source>java:jboss/datasources/PostgreSQLDS</jta-data-source>
 		<class>com.sapo.entities.Administrador</class>
-		<class>com.sapo.entities.Usuario</class>
+		<class>com.sapo.entities.Atributo</class>
+		<class>com.sapo.entities.Av</class>
+		<class>com.sapo.entities.CarritoProducto</class>
+		<class>com.sapo.entities.CarritoProductoPK</class>
+		<class>com.sapo.entities.Categoria</class>
+		<class>com.sapo.entities.CategoriasEspecifica</class>
+		<class>com.sapo.entities.CategoriasGenerica</class>
+		<class>com.sapo.entities.ExternalLoginAccount</class>
 		<class>com.sapo.entities.Persona</class>
+		<class>com.sapo.entities.Producto</class>
+		<class>com.sapo.entities.ProductosCustom</class>
+		<class>com.sapo.entities.ProductosGenerico</class>
+		<class>com.sapo.entities.Stock</class>
+		<class>com.sapo.entities.StockPK</class>
+		<class>com.sapo.entities.Template</class>
+		<class>com.sapo.entities.Usuario</class>
 	</persistence-unit>
 </persistence>
