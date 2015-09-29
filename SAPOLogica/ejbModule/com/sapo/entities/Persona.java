@@ -1,7 +1,12 @@
 package com.sapo.entities;
 
 import java.io.Serializable;
+
+import javax.jms.JMSSessionMode;
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 
 @Entity
@@ -18,11 +23,13 @@ public abstract class Persona implements Serializable {
 	private String nombre;
 
 	//bi-directional many-to-one association to Av
-	@OneToMany(mappedBy="persona",fetch=FetchType.EAGER)
+	@JsonIgnore
+	@OneToMany(mappedBy="persona")
 	private List<Av> avs1;
 
 	//bi-directional many-to-many association to Av
-	@ManyToMany(fetch=FetchType.EAGER)
+	@JsonIgnore
+	@ManyToMany //(fetch=FetchType.EAGER)
 	@JoinTable(
 		name="usuarios_invitados"
 		, joinColumns={

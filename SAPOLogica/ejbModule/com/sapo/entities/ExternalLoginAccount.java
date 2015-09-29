@@ -2,6 +2,9 @@ package com.sapo.entities;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 
 
@@ -21,6 +24,7 @@ public class ExternalLoginAccount implements Serializable {
 	private String proveedor;
 
 	//bi-directional many-to-one association to Persona
+	@JsonIgnore
 	@OneToMany(mappedBy="externalLoginAccount")
 	private List<Persona> personas;
 

@@ -4,6 +4,9 @@ import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -25,11 +28,17 @@ public class administradores {
 	@EJB
 	private administradorController pc;
 	
+	@PersistenceContext(unitName="SAPOLogica")
+	EntityManager em;
+	
 	@GET
 	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Administrador> getAdministradors(){
-		return pc.getAdministradores();
+		TypedQuery<Administrador> query = em.createNamedQuery("Administrador.findAll",Administrador.class);	 
+		List<Administrador> lista = query.getResultList();
+
+		return lista;
 	}
 	
 	@GET
