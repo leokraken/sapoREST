@@ -17,10 +17,9 @@ import javax.ws.rs.core.Response;
 import com.sapo.controllers.productoController;
 import com.sapo.datatypes.DataProducto;
 import com.sapo.entities.Producto;
-import com.sapo.entities.ProductosGenerico;
 
 @Stateless
-@Path("/productos")
+@Path("/producto")
 @Produces({ "application/xml", "application/json" })
 @Consumes({ "application/xml", "application/json" })
 public class productos {
@@ -29,28 +28,28 @@ public class productos {
 	private productoController pc;
 	
 	@GET
-	@Path("/genericos")
+	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ProductosGenerico> getProductos(){
+	public List<Producto> getProductos(){
 
-		return pc.getProductosGenericos();
+		return pc.getProductos();
 	}
 	
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Producto getProducto(@PathParam("id")long prodID){
-		return pc.getProducto(prodID);
+	public Producto getProducto(@PathParam("id") long id){
+		return pc.getProducto(id);
 	}
 	
 	@POST
-	@Path("/generico/create")
+	@Path("/create")
 	@Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-	public Response addProductoGenerico(DataProducto producto){
+	public Response addProducto(DataProducto producto){
 	
 		try{
-			pc.addProductoGenerico(producto);
+			pc.addProducto(producto);
 			return Response.ok().build();
 			
 		}catch(Exception E){
@@ -61,9 +60,10 @@ public class productos {
 	@PUT
 	@Path("{id}")
 	@Produces({MediaType.APPLICATION_JSON,MediaType.TEXT_PLAIN})
-	public Response updateProducto(@PathParam("id")String productoID, DataProducto dp){
-		pc.updateProductoGenerico(dp);
+	public Response updateProductoGenerico(@PathParam("id")String productoID, DataProducto dp){
+		pc.updateProducto(dp);
 		return Response.ok().build();
 	}
 
 }
+

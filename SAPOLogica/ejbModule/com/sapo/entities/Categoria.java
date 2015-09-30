@@ -13,15 +13,17 @@ import java.util.List;
  * 
  */
 @Entity
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@Table(name="categorias")
 @NamedQuery(name="Categoria.findAll", query="SELECT c FROM Categoria c")
-public abstract class Categoria implements Serializable {
+public class Categoria implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	private Long id;
 
 	private String descripcion;
+
+	private Boolean generica;
 
 	private String nombre;
 
@@ -52,6 +54,14 @@ public abstract class Categoria implements Serializable {
 
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
+	}
+
+	public Boolean getGenerica() {
+		return this.generica;
+	}
+
+	public void setGenerica(Boolean generica) {
+		this.generica = generica;
 	}
 
 	public String getNombre() {

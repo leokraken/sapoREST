@@ -8,23 +8,25 @@ create table external_login_account(
 	proveedor varchar(60)
 );
 
-create table personas(
+
+create table administradores(
 	id varchar primary key,
 	nombre varchar(60),
 	apellido varchar(60),
 	account_type smallint references external_login_account(id)
 );
 
-create table administradores(
-)inherits(personas);
-
 create table usuarios(
-) inherits(personas);
+	id varchar primary key,
+	nombre varchar(60),
+	apellido varchar(60),
+	account_type smallint references external_login_account(id)
+);
 
 --global
 create table avs(
 	id bigserial primary key,
-	id_usuario_duenio varchar references personas(id),
+	id_usuario_duenio varchar references usuarios(id),
 	url varchar(255),
 	nombre varchar(60),
 	descripcion varchar(255)
@@ -32,44 +34,29 @@ create table avs(
 
 --many to many
 create table usuarios_invitados(
-	id_usuario varchar references personas(id),
+	id_usuario varchar references usuarios(id),
 	id_av bigint references avs(id),
 	primary key(id_usuario, id_av)
 );
 
 
---mixtas
+--global para cada av
 create table categorias(
 	id bigserial primary key,
 	nombre varchar(60),
-	descripcion varchar(255)
+	descripcion varchar(255),
+	generica boolean default true
 );
-
---especificas de cada av
-create table categorias_especificas(
-	id_av bigint references avs(id)
-) inherits(categorias);
-
---global para cada av
-create table categorias_genericas(
-) inherits(categorias);
 
 --mixto
 create table productos(
 	id bigserial primary key,
-	categoria_id bigint references categorias(id) not null, --tiene una categoria
 	nombre varchar(60),
-	descripcion varchar(60)
+	descripcion varchar(60),
+	categoriaid bigint references categorias(id),
+	generico boolean default true
 );
 
---especifico para un av
-create table productos_custom(
-	id_av bigint references avs(id) not null
-)inherits(productos);
-
---globales no tienen av específico
-create table productos_genericos(
-)inherits(productos);
 
 --globales
 create table atributos(

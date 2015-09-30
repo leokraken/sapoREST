@@ -4,11 +4,29 @@ import com.sapo.entities.Producto;
 
 public class DataProducto {
 
+	private long id;
 	private String nombre;
 	private String descripcion;
 	private long categoria;
+	private Boolean isgenerico;
 
 	
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public Boolean getIsgenerico() {
+		return isgenerico;
+	}
+
+	public void setIsgenerico(Boolean isgenerico) {
+		this.isgenerico = isgenerico;
+	}
+
 	public DataProducto(Producto prod) {
 		this.nombre= prod.getNombre();
 		this.descripcion = prod.getDescripcion();

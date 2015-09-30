@@ -13,15 +13,17 @@ import java.util.List;
  * 
  */
 @Entity
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@Table(name="productos")
 @NamedQuery(name="Producto.findAll", query="SELECT p FROM Producto p")
-public abstract class Producto implements Serializable {
+public class Producto implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	private Long id;
 
 	private String descripcion;
+
+	private Boolean generico;
 
 	private String nombre;
 
@@ -36,7 +38,8 @@ public abstract class Producto implements Serializable {
 	private List<CarritoProducto> carritoProductos;
 
 	//bi-directional many-to-one association to Categoria
-	@ManyToOne(fetch=FetchType.EAGER)
+	@ManyToOne
+	@JoinColumn(name="categoriaid")
 	private Categoria categoria;
 
 	//bi-directional many-to-one association to Stock
@@ -61,6 +64,14 @@ public abstract class Producto implements Serializable {
 
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
+	}
+
+	public Boolean getGenerico() {
+		return this.generico;
+	}
+
+	public void setGenerico(Boolean generico) {
+		this.generico = generico;
 	}
 
 	public String getNombre() {

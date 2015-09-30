@@ -2,9 +2,6 @@ package com.sapo.entities;
 
 import java.io.Serializable;
 import javax.persistence.*;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.List;
 
 
@@ -23,10 +20,13 @@ public class ExternalLoginAccount implements Serializable {
 
 	private String proveedor;
 
-	//bi-directional many-to-one association to Persona
-	@JsonIgnore
+	//bi-directional many-to-one association to Administrador
 	@OneToMany(mappedBy="externalLoginAccount")
-	private List<Persona> personas;
+	private List<Administrador> administradores;
+
+	//bi-directional many-to-one association to Usuario
+	@OneToMany(mappedBy="externalLoginAccount")
+	private List<Usuario> usuarios;
 
 	public ExternalLoginAccount() {
 	}
@@ -47,26 +47,48 @@ public class ExternalLoginAccount implements Serializable {
 		this.proveedor = proveedor;
 	}
 
-	public List<Persona> getPersonas() {
-		return this.personas;
+	public List<Administrador> getAdministradores() {
+		return this.administradores;
 	}
 
-	public void setPersonas(List<Persona> personas) {
-		this.personas = personas;
+	public void setAdministradores(List<Administrador> administradores) {
+		this.administradores = administradores;
 	}
 
-	public Persona addPersona(Persona persona) {
-		getPersonas().add(persona);
-		persona.setExternalLoginAccount(this);
+	public Administrador addAdministradore(Administrador administradore) {
+		getAdministradores().add(administradore);
+		administradore.setExternalLoginAccount(this);
 
-		return persona;
+		return administradore;
 	}
 
-	public Persona removePersona(Persona persona) {
-		getPersonas().remove(persona);
-		persona.setExternalLoginAccount(null);
+	public Administrador removeAdministradore(Administrador administradore) {
+		getAdministradores().remove(administradore);
+		administradore.setExternalLoginAccount(null);
 
-		return persona;
+		return administradore;
+	}
+
+	public List<Usuario> getUsuarios() {
+		return this.usuarios;
+	}
+
+	public void setUsuarios(List<Usuario> usuarios) {
+		this.usuarios = usuarios;
+	}
+
+	public Usuario addUsuario(Usuario usuario) {
+		getUsuarios().add(usuario);
+		usuario.setExternalLoginAccount(this);
+
+		return usuario;
+	}
+
+	public Usuario removeUsuario(Usuario usuario) {
+		getUsuarios().remove(usuario);
+		usuario.setExternalLoginAccount(null);
+
+		return usuario;
 	}
 
 }

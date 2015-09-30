@@ -23,31 +23,36 @@ public class productoController {
     //CRUD
     
     public Producto getProducto(long id){
-    	return em.find(Producto.class, id);
+    	return em.find(Producto.class, id);   	
     }
+
     
-    public List<ProductosGenerico> getProductosGenericos(){
-    	TypedQuery<ProductosGenerico> query = em.createNamedQuery("ProductosGenerico.findAll",ProductosGenerico.class);
+    public List<Producto> getProductos(){
+    	TypedQuery<Producto> query = em.createNamedQuery("Producto.findAll",Producto.class);
     	return query.getResultList();
     	
     }
-    
-    public void addProductoGenerico(DataProducto dp){
-    	Producto p = new ProductosGenerico();
+   
+    public void addProducto(DataProducto dp){
+    	Producto p = new Producto();
+   	
     	p.setNombre(dp.getNombre());
     	p.setDescripcion(dp.getDescripcion());
     	p.setCategoria(em.find(Categoria.class, dp.getCategoria()));
+    	p.setGenerico(dp.getIsgenerico());
     	
     	em.persist(p); 
     	em.flush();
 	}
-	
-	public void updateProductoGenerico(DataProducto dp){
-    	Producto p = new ProductosGenerico();
+
+    
+	public void updateProducto(DataProducto dp){
+		Producto p = new Producto();
     	p.setNombre(dp.getNombre());
     	p.setDescripcion(dp.getDescripcion());
+    	p.setGenerico(dp.getIsgenerico());
     	p.setCategoria(em.find(Categoria.class, dp.getCategoria()));
-    	
+ 
 		em.merge(p);    	
 	}
     

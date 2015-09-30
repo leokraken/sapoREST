@@ -24,30 +24,22 @@ public class Av implements Serializable {
 
 	private String url;
 
-	//bi-directional many-to-one association to Persona
+	//bi-directional many-to-one association to Usuario
 	@ManyToOne
 	@JoinColumn(name="id_usuario_duenio")
-	private Persona persona;
+	private Usuario usuario;
 
 	//bi-directional many-to-one association to CarritoProducto
 	@OneToMany(mappedBy="av")
 	private List<CarritoProducto> carritoProductos;
 
-	//bi-directional many-to-one association to CategoriasEspecifica
-	@OneToMany(mappedBy="av")
-	private List<CategoriasEspecifica> categoriasEspecificas;
-
-	//bi-directional many-to-many association to Persona
-	@ManyToMany(mappedBy="avs2")
-	private List<Persona> personas;
-
-	//bi-directional many-to-one association to ProductosCustom
-	@OneToMany(mappedBy="av")
-	private List<ProductosCustom> productosCustoms;
-
 	//bi-directional many-to-one association to Stock
 	@OneToMany(mappedBy="av")
 	private List<Stock> stocks;
+
+	//bi-directional many-to-many association to Usuario
+	@ManyToMany(mappedBy="avs2")
+	private List<Usuario> usuarios;
 
 	public Av() {
 	}
@@ -84,12 +76,12 @@ public class Av implements Serializable {
 		this.url = url;
 	}
 
-	public Persona getPersona() {
-		return this.persona;
+	public Usuario getUsuario() {
+		return this.usuario;
 	}
 
-	public void setPersona(Persona persona) {
-		this.persona = persona;
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
 
 	public List<CarritoProducto> getCarritoProductos() {
@@ -114,58 +106,6 @@ public class Av implements Serializable {
 		return carritoProducto;
 	}
 
-	public List<CategoriasEspecifica> getCategoriasEspecificas() {
-		return this.categoriasEspecificas;
-	}
-
-	public void setCategoriasEspecificas(List<CategoriasEspecifica> categoriasEspecificas) {
-		this.categoriasEspecificas = categoriasEspecificas;
-	}
-
-	public CategoriasEspecifica addCategoriasEspecifica(CategoriasEspecifica categoriasEspecifica) {
-		getCategoriasEspecificas().add(categoriasEspecifica);
-		categoriasEspecifica.setAv(this);
-
-		return categoriasEspecifica;
-	}
-
-	public CategoriasEspecifica removeCategoriasEspecifica(CategoriasEspecifica categoriasEspecifica) {
-		getCategoriasEspecificas().remove(categoriasEspecifica);
-		categoriasEspecifica.setAv(null);
-
-		return categoriasEspecifica;
-	}
-
-	public List<Persona> getPersonas() {
-		return this.personas;
-	}
-
-	public void setPersonas(List<Persona> personas) {
-		this.personas = personas;
-	}
-
-	public List<ProductosCustom> getProductosCustoms() {
-		return this.productosCustoms;
-	}
-
-	public void setProductosCustoms(List<ProductosCustom> productosCustoms) {
-		this.productosCustoms = productosCustoms;
-	}
-
-	public ProductosCustom addProductosCustom(ProductosCustom productosCustom) {
-		getProductosCustoms().add(productosCustom);
-		productosCustom.setAv(this);
-
-		return productosCustom;
-	}
-
-	public ProductosCustom removeProductosCustom(ProductosCustom productosCustom) {
-		getProductosCustoms().remove(productosCustom);
-		productosCustom.setAv(null);
-
-		return productosCustom;
-	}
-
 	public List<Stock> getStocks() {
 		return this.stocks;
 	}
@@ -186,6 +126,14 @@ public class Av implements Serializable {
 		stock.setAv(null);
 
 		return stock;
+	}
+
+	public List<Usuario> getUsuarios() {
+		return this.usuarios;
+	}
+
+	public void setUsuarios(List<Usuario> usuarios) {
+		this.usuarios = usuarios;
 	}
 
 }
