@@ -19,6 +19,7 @@ public class Producto implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
 	private String descripcion;
@@ -28,12 +29,12 @@ public class Producto implements Serializable {
 	private String nombre;
 
 	//bi-directional many-to-one association to Atributo
-	@JsonIgnore
+	//@JsonIgnore
 	@OneToMany(mappedBy="producto")
 	private List<Atributo> atributos;
 
 	//bi-directional many-to-one association to CarritoProducto
-	@JsonIgnore
+	//@JsonIgnore
 	@OneToMany(mappedBy="producto")
 	private List<CarritoProducto> carritoProductos;
 
@@ -43,7 +44,7 @@ public class Producto implements Serializable {
 	private Categoria categoria;
 
 	//bi-directional many-to-one association to Stock
-	@JsonIgnore
+	//@JsonIgnore
 	@OneToMany(mappedBy="producto")
 	private List<Stock> stocks;
 

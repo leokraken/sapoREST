@@ -4,10 +4,6 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 
-/**
- * The persistent class for the administradores database table.
- * 
- */
 @Entity
 @Table(name="administradores")
 @NamedQuery(name="Administrador.findAll", query="SELECT a FROM Administrador a")

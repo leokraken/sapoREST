@@ -1,4 +1,4 @@
-package com.sapo.rest;
+package com.sapo.controllers;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
