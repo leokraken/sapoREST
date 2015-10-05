@@ -1,5 +1,6 @@
 package com.sapo.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.LocalBean;
@@ -45,28 +46,33 @@ public class productoController {
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-    public Producto getProducto(@PathParam(value="id")Long id){
+    public DataProducto getProducto(@PathParam(value="id")Long id){
     	Producto p = em.find(Producto.class, id);  
-    	p.setAtributos(null);
-    	p.setCarritoProductos(null);
-    	p.setStocks(null);
-    	p.getCategoria().setProductos(null);
-    	p.getCategoria().setTemplates(null);
-    	return p;
+    	DataProducto dp = new  DataProducto();
+    	dp.setIsgenerico(p.getGenerico());
+    	dp.setDescripcion(p.getDescripcion());
+    	dp.setNombre(p.getNombre());
+    	dp.setCategoria(p.getCategoria().getId());
+    	return dp;
     }
 
 	@GET
 	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
-    public List<Producto> getProductos(){
+    public List<DataProducto> getProductos(){
     	TypedQuery<Producto> query = em.createNamedQuery("Producto.findAll",Producto.class);
     	List<Producto>  prods = query.getResultList();
+    	List<DataProducto> ret = new ArrayList<DataProducto>();
 		for(Producto p : prods){
-			p.setCarritoProductos(null);
-			p.setAtributos(null);
-			p.setStocks(null);
+	    	 
+	    	DataProducto dp = new  DataProducto();
+	    	dp.setIsgenerico(p.getGenerico());
+	    	dp.setDescripcion(p.getDescripcion());
+	    	dp.setNombre(p.getNombre());
+	    	dp.setCategoria(p.getCategoria().getId());
+	    	ret.add(dp);
 		}
-		return prods;
+		return ret;
     }
    
 	@POST

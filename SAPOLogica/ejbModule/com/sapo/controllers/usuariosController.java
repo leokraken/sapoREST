@@ -1,9 +1,13 @@
 package com.sapo.controllers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -48,28 +52,30 @@ public class usuariosController {
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-    public Usuario getUsuario(@PathParam(value="id") String id){
+    public DataPersona getUsuario(@PathParam(value="id") String id){
     	Usuario u = em.find(Usuario.class, id);
-    	u.setAvs1(null);
-    	u.setAvs2(null);
-    	u.getExternalLoginAccount().setAdministradores(null);
-    	u.getExternalLoginAccount().setUsuarios(null);
-    	return u;
+    	DataPersona dp = new DataPersona();
+		dp.setId(u.getId());
+		dp.setApellido(u.getApellido());
+		dp.setNombre(u.getNombre());
+    	return dp;
     }
     
 	@GET
 	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
-    public List<Usuario> getUsuarios(){
+    public List<DataPersona> getUsuarios(){
     	TypedQuery<Usuario> query = em.createNamedQuery("Usuario.findAll",Usuario.class);
     	List<Usuario> usuarios = query.getResultList();
+    	List<DataPersona> ret = new ArrayList<DataPersona>();
     	for(Usuario u : usuarios){
-    		u.setAvs1(null);
-    		u.setAvs2(null);
-    		u.getExternalLoginAccount().setAdministradores(null);//.setAdministradores(null);
-    		u.getExternalLoginAccount().setUsuarios(null);
+    		DataPersona dp = new DataPersona();
+    		dp.setId(u.getId());
+    		dp.setApellido(u.getApellido());
+    		dp.setNombre(u.getNombre());
+    		ret.add(dp);
     	}
-    	return usuarios;
+    	return ret;
     }
     
 	@POST
@@ -112,8 +118,28 @@ public class usuariosController {
     	Av almacen = new Av();
     	almacen.setNombre(da.getNombre());
     	almacen.setDescripcion(da.getDescripcion());
+    	almacen.setUrl(da.getUrl());
     	almacen.setUsuario(em.find(Usuario.class,usuario));
     	em.persist(almacen);
+	}
+	
+	@GET
+	@Path("{usuario}/almacenes/list")
+	@Produces(MediaType.APPLICATION_JSON)
+    public List<DataAlmacen> listAlmacenesUsuario(@PathParam(value = "usuario") String usuario){
+		Usuario u = em.find(Usuario.class, usuario);
+		List<DataAlmacen> ret = new ArrayList<DataAlmacen>();
+		for(Av a : u.getAvs1()){
+			DataAlmacen da = new DataAlmacen();
+			da.setId(a.getId());
+			da.setDescripcion(a.getDescripcion());
+			da.setNombre(a.getNombre());
+			da.setUrl(a.getUrl());
+			da.setUsuario(u.getId());
+			ret.add(da);
+		}
+		
+		return ret;
 	}
     
 }

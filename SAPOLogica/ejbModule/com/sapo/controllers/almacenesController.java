@@ -1,5 +1,6 @@
 package com.sapo.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.LocalBean;
@@ -9,13 +10,17 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import com.sapo.datatypes.DataAlmacen;
 import com.sapo.entities.Administrador;
 import com.sapo.entities.Av;
+import com.sapo.entities.Usuario;
 
 
 @Stateless
@@ -34,33 +39,35 @@ public class almacenesController {
 	@GET
 	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Av> getAlmacenes(){
+	public List<DataAlmacen> getAlmacenes(){
     	TypedQuery<Av> query = em.createNamedQuery("Av.findAll",Av.class);
     	List<Av> avs = query.getResultList();
-    	for(Av av : avs){
-    		av.setUsuarios(null);
-    		av.setCarritoProductos(null);
-    		av.getUsuario().setAvs1(null);
-    		av.getUsuario().setAvs2(null);
-    		av.getUsuario().setExternalLoginAccount(null);
-    		av.setStocks(null);
+    	List<DataAlmacen> ret = new ArrayList<>();
+    	for(Av a : avs){
+    		DataAlmacen da = new DataAlmacen();
+    		da.setId(a.getId());
+    		da.setDescripcion(a.getDescripcion());
+    		da.setNombre(a.getNombre());
+    		da.setUrl(a.getUrl());
+    		ret.add(da);
     	}
-    	return avs;
+    	return ret;
 	}    
 	
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-	public Av getAlmacen(@PathParam("id") Long id){
+	public DataAlmacen getAlmacen(@PathParam("id") Long id){
 		
-		Av ret = em.find(Av.class,id);
-		ret.setCarritoProductos(null);
-		ret.setStocks(null);
-		ret.setUsuarios(null);
-		ret.setUsuario(null);
-		return ret;
+		Av a = em.find(Av.class,id);
+		DataAlmacen da = new DataAlmacen();
+		da.setId(id);
+		da.setDescripcion(a.getDescripcion());
+		da.setNombre(a.getNombre());
+		da.setUrl(a.getUrl());
+		return da;
 	}
-	
-	
+
+
 }
