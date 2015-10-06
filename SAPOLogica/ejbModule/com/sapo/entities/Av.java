@@ -42,6 +42,19 @@ public class Av implements Serializable {
 	@ManyToMany(mappedBy="avs2")
 	private List<Usuario> usuarios;
 
+	//bi-directional many-to-many association to Categoria
+	@ManyToMany
+	@JoinTable(
+		name="avs_categorias"
+		, joinColumns={
+			@JoinColumn(name="id_av")
+			}
+		, inverseJoinColumns={
+			@JoinColumn(name="id_categoria")
+			}
+		)
+	private List<Categoria> categorias;
+
 	public Av() {
 	}
 
@@ -135,6 +148,14 @@ public class Av implements Serializable {
 
 	public void setUsuarios(List<Usuario> usuarios) {
 		this.usuarios = usuarios;
+	}
+
+	public List<Categoria> getCategorias() {
+		return this.categorias;
+	}
+
+	public void setCategorias(List<Categoria> categorias) {
+		this.categorias = categorias;
 	}
 
 }

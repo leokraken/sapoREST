@@ -1,13 +1,10 @@
 package com.sapo.controllers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -94,7 +91,8 @@ public class usuariosController {
         	em.flush();	
         	return Response.ok().build();
 		}catch(Exception e){
-			return Response.serverError().entity("Administrador ya existe").build();
+			e.printStackTrace();
+			return Response.serverError().entity("Usuario ya existe").build();
 		}
 
     }

@@ -2,9 +2,6 @@ package com.sapo.entities;
 
 import java.io.Serializable;
 import javax.persistence.*;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.List;
 
 
@@ -19,6 +16,7 @@ public class Categoria implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
 	private String descripcion;
@@ -28,14 +26,16 @@ public class Categoria implements Serializable {
 	private String nombre;
 
 	//bi-directional many-to-one association to Producto
-	@JsonIgnore
 	@OneToMany(mappedBy="categoria")
 	private List<Producto> productos;
 
 	//bi-directional many-to-many association to Template
-	@JsonIgnore
 	@ManyToMany(mappedBy="categorias")
 	private List<Template> templates;
+
+	//bi-directional many-to-many association to Av
+	@ManyToMany(mappedBy="categorias")
+	private List<Av> avs;
 
 	public Categoria() {
 	}
@@ -100,6 +100,14 @@ public class Categoria implements Serializable {
 
 	public void setTemplates(List<Template> templates) {
 		this.templates = templates;
+	}
+
+	public List<Av> getAvs() {
+		return this.avs;
+	}
+
+	public void setAvs(List<Av> avs) {
+		this.avs = avs;
 	}
 
 }

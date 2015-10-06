@@ -5,6 +5,10 @@ import javax.persistence.*;
 import java.util.List;
 
 
+/**
+ * The persistent class for the usuarios database table.
+ * 
+ */
 @Entity
 @Table(name="usuarios")
 @NamedQuery(name="Usuario.findAll", query="SELECT u FROM Usuario u")
@@ -19,7 +23,7 @@ public class Usuario implements Serializable {
 	private String nombre;
 
 	//bi-directional many-to-one association to Av
-	@OneToMany(mappedBy="usuario", fetch=FetchType.EAGER)
+	@OneToMany(mappedBy="usuario")
 	private List<Av> avs1;
 
 	//bi-directional many-to-many association to Av

@@ -18,9 +18,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.sapo.datatypes.DataAlmacen;
-import com.sapo.entities.Administrador;
 import com.sapo.entities.Av;
-import com.sapo.entities.Usuario;
+import com.sapo.entities.Categoria;
 
 
 @Stateless
@@ -69,5 +68,17 @@ public class almacenesController {
 		return da;
 	}
 
+	@POST
+	@Path("{id}/agregarcategorias")
+    @Consumes(MediaType.APPLICATION_JSON)
+	public Response agregarCategoriasAlmacen(@PathParam("id") Long id, List<Long> categorias){
+		Av a = em.find(Av.class,id);			
+		for(Long cat : categorias){
+			System.out.println(cat);
+			a.getCategorias().add(em.find(Categoria.class, cat));
+		}
+
+		return Response.ok().build();
+	}
 
 }

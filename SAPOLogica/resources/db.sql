@@ -97,6 +97,12 @@ create table template_categoria(
 	primary key(id_template, id_categoria)
 );
 
+create table avs_categorias(
+	id_av bigint references avs(id),
+	id_categoria bigint references categorias(id),
+	primary key (id_av, id_categoria)
+);
+
 
 --categorias de almacenes son las mismas que la de los productos?
 
