@@ -2,9 +2,10 @@ package com.sapo.datatypes;
 
 public class DataProducto {
 
+	private Long ID;
 	private String nombre;
 	private String descripcion;
-	private long categoria;
+	private Long categoria;
 	private Boolean isgenerico;
 
 	public Boolean getIsgenerico() {
@@ -27,11 +28,20 @@ public class DataProducto {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
-	public long getCategoria() {
+	public Long getCategoria() {
 		return categoria;
 	}
-	public void setCategoria(long categoria) {
+	public void setCategoria(Long categoria) {
 		this.categoria = categoria;
 	}
+
+	public Long getID() {
+		return ID;
+	}
+
+	public void setID(Long iD) {
+		ID = iD;
+	}
+	
 	
 }

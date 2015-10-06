@@ -52,6 +52,7 @@ public class productoController {
     	dp.setIsgenerico(p.getGenerico());
     	dp.setDescripcion(p.getDescripcion());
     	dp.setNombre(p.getNombre());
+    	dp.setID(p.getId());
     	dp.setCategoria(p.getCategoria().getId());
     	return dp;
     }
@@ -69,6 +70,7 @@ public class productoController {
 	    	dp.setIsgenerico(p.getGenerico());
 	    	dp.setDescripcion(p.getDescripcion());
 	    	dp.setNombre(p.getNombre());
+	    	dp.setID(p.getId());
 	    	dp.setCategoria(p.getCategoria().getId());
 	    	ret.add(dp);
 		}
