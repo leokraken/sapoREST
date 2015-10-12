@@ -77,6 +77,7 @@ public class productoController {
 		return ret;
     }
    
+	//User || admin
 	@POST
 	@Path("/create")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -99,6 +100,8 @@ public class productoController {
 
 	}
 
+	//if producto generico admin
+	//else user
 	@PUT
 	@Path("{id}")
 	@Produces({MediaType.APPLICATION_JSON,MediaType.TEXT_PLAIN})
@@ -112,8 +115,6 @@ public class productoController {
 
 		em.merge(p);
 		return Response.ok().build();
-
 	}
-    
 
 }

@@ -73,6 +73,7 @@ public class templateController {
 		return ret;
 	}
 	
+	//admin
 	@POST
 	@Path("create")
 	@Produces(MediaType.APPLICATION_JSON)	
@@ -81,7 +82,7 @@ public class templateController {
 		t.setDescripcion(datetemplate.getDescripcion());
 		t.setNombre(datetemplate.getNombre());
 		t.setCategorias(new ArrayList<Categoria>());
-		//t.setCategorias(categorias);
+
 		for(DataCategoria dc : datetemplate.getCategorias()){
 			System.out.println("Print data id");
 			System.out.println(dc.getID());

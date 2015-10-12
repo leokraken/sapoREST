@@ -10,6 +10,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -27,6 +28,7 @@ import com.sapo.entities.Producto;
 import com.sapo.entities.Stock;
 import com.sapo.entities.StockPK;
 import com.sapo.entities.Usuario;
+import com.sapo.security.SecurityUtils;
 
 
 @Stateless
@@ -38,6 +40,8 @@ public class almacenesController {
 
 	@PersistenceContext(unitName="SAPOLogica")
 	private EntityManager em;
+	
+	private SecurityUtils su = new SecurityUtils();
 	
     public almacenesController() {
     }
@@ -152,7 +156,15 @@ public class almacenesController {
 	@GET
 	@Path("datastock")
 	@Produces(MediaType.APPLICATION_JSON)
-	public DataStock getDataStock(){
-		return new DataStock();
+	public Response getDataStock(@HeaderParam("user-token") String userToken,
+								  @HeaderParam("user-login") String user)
+	{
+		if(su.authorizeUser(userToken, user,new Long(2), em))
+		
+			return Response.status(200).entity(new DataStock()).build();
+		else
+			return Response.status(401).build();
+		
 	}
+	
 }

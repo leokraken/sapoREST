@@ -21,6 +21,10 @@ import javax.ws.rs.core.Response;
 import com.sapo.datatypes.DataPersona;
 import com.sapo.entities.Administrador;
 
+/*
+ * Solo administradores auth
+ * */
+
 @Stateless
 @LocalBean
 @Path("/administradores")

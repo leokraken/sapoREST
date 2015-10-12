@@ -44,6 +44,7 @@ public class categoriaController {
 		return Response.ok().entity(new DataCategoria()).build();
 	}
 	
+	//all
     @GET
 	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -64,6 +65,7 @@ public class categoriaController {
     	return ret;
 	}
 	
+    //all
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -90,6 +92,7 @@ public class categoriaController {
     	return Response.status(200).entity(dc).build();
     }
 	
+	//user || admin
 	@POST
 	@Path("create")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -109,7 +112,7 @@ public class categoriaController {
 		}
 
     }
-	
+	//depende...
 	@PUT
 	@Path("{categoriaID}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -131,6 +134,8 @@ public class categoriaController {
 
     }
 		
+	//si es generica solo admin
+	//especifica usuario
 	@DELETE
 	@Path("{categoriaID}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -143,6 +148,7 @@ public class categoriaController {
 		return Response.status(200).build();
 	}
    
+	//all
 	@GET
 	@Path("{id}/productos")
 	@Produces(MediaType.APPLICATION_JSON)

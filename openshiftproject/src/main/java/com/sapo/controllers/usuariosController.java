@@ -44,7 +44,7 @@ public class usuariosController {
     	return new DataPersona();
     }
     
-    
+    //user || admin
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -57,6 +57,7 @@ public class usuariosController {
     	return dp;
     }
     
+	//user || admin
 	@GET
 	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
