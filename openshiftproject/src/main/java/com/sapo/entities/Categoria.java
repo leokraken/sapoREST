@@ -25,6 +25,10 @@ public class Categoria implements Serializable {
 
 	private String nombre;
 
+	//bi-directional many-to-many association to Av
+	@ManyToMany(mappedBy="categorias")
+	private List<Av> avs;
+
 	//bi-directional many-to-one association to Producto
 	@OneToMany(mappedBy="categoria")
 	private List<Producto> productos;
@@ -32,10 +36,6 @@ public class Categoria implements Serializable {
 	//bi-directional many-to-many association to Template
 	@ManyToMany(mappedBy="categorias")
 	private List<Template> templates;
-
-	//bi-directional many-to-many association to Av
-	@ManyToMany(mappedBy="categorias")
-	private List<Av> avs;
 
 	public Categoria() {
 	}
@@ -72,6 +72,14 @@ public class Categoria implements Serializable {
 		this.nombre = nombre;
 	}
 
+	public List<Av> getAvs() {
+		return this.avs;
+	}
+
+	public void setAvs(List<Av> avs) {
+		this.avs = avs;
+	}
+
 	public List<Producto> getProductos() {
 		return this.productos;
 	}
@@ -100,14 +108,6 @@ public class Categoria implements Serializable {
 
 	public void setTemplates(List<Template> templates) {
 		this.templates = templates;
-	}
-
-	public List<Av> getAvs() {
-		return this.avs;
-	}
-
-	public void setAvs(List<Av> avs) {
-		this.avs = avs;
 	}
 
 }

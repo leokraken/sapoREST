@@ -18,8 +18,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.sapo.datatypes.DataAlmacen;
+import com.sapo.datatypes.DataStock;
 import com.sapo.entities.Av;
 import com.sapo.entities.Categoria;
+import com.sapo.entities.Producto;
+import com.sapo.entities.Stock;
+import com.sapo.entities.StockPK;
+import com.sapo.entities.TokensUsuario;
+import com.sapo.entities.TokensUsuarioPK;
+import com.sapo.entities.Usuario;
 
 
 @Stateless
@@ -81,4 +88,34 @@ public class almacenesController {
 		return Response.ok().build();
 	}
 
+	@POST
+	@Path("{id}/agregarproductos")
+    @Consumes(MediaType.APPLICATION_JSON)
+	public Response agregarProductosAlmacen(@PathParam("id") Long id, List<DataStock> productos){
+		Av a = em.find(Av.class,id);			
+		for(DataStock prod : productos){
+			System.out.println(prod);
+			Stock stock = new Stock();
+			stock.setCantidad(prod.getCantidad());
+			stock.setAv(a);
+			stock.setProducto(em.find(Producto.class, prod.getProductoID()));
+			
+			StockPK stockid = new StockPK();
+			stockid.setIdAv(id);
+			stockid.setIdProducto(prod.getProductoID());
+			stock.setId(stockid);
+			em.persist(stock);
+			em.flush();
+		}
+
+		return Response.status(200).build();
+	}
+	
+	/*datatypes*/
+	@GET
+	@Path("datastock")
+	@Produces(MediaType.APPLICATION_JSON)
+	public DataStock getDataStock(){
+		return new DataStock();
+	}
 }

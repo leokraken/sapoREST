@@ -20,7 +20,6 @@ import javax.ws.rs.core.Response;
 
 import com.sapo.datatypes.DataPersona;
 import com.sapo.entities.Administrador;
-import com.sapo.entities.ExternalLoginAccount;
 
 @Stateless
 @LocalBean
@@ -42,7 +41,6 @@ public class administradorController {
     public DataPersona getAdministrador(@PathParam(value="id")String id){
     	Administrador admin= em.find(Administrador.class, id);
     	DataPersona dp = new DataPersona();
-    	dp.setAccount_id(admin.getExternalLoginAccount().getId());
 		dp.setApellido(admin.getApellido());
     	dp.setNombre(admin.getNombre());
     	dp.setId(admin.getId());
@@ -58,7 +56,6 @@ public class administradorController {
     	List<Administrador> admins = query.getResultList();
     	for(Administrador a : admins){
         	DataPersona dp = new DataPersona();
-        	dp.setAccount_id(a.getExternalLoginAccount().getId());
     		dp.setApellido(a.getApellido());
         	dp.setNombre(a.getNombre());
         	dp.setId(a.getId());
@@ -74,7 +71,6 @@ public class administradorController {
     public Response addAdministrador(DataPersona dataadmin){
 		try{
 	    	Administrador admin = new Administrador();
-			admin.setExternalLoginAccount(em.find(ExternalLoginAccount.class, dataadmin.getAccount_id()));
 	    	admin.setApellido(dataadmin.getApellido());
 	    	admin.setNombre(dataadmin.getNombre());
 	    	admin.setId(dataadmin.getId());
@@ -93,7 +89,6 @@ public class administradorController {
 	@Produces({MediaType.APPLICATION_JSON,MediaType.TEXT_PLAIN})
     public Response updateAdministrador(@PathParam(value="id")String id,DataPersona dataadmin){
 		Administrador admin = new Administrador();
-		admin.setExternalLoginAccount(em.find(ExternalLoginAccount.class, dataadmin.getAccount_id()));
     	admin.setApellido(dataadmin.getApellido());
     	admin.setNombre(dataadmin.getNombre());
     	admin.setId(dataadmin.getId());
@@ -101,5 +96,5 @@ public class administradorController {
 		em.merge(admin);
 		return Response.ok().build();
     }
-     
+
 }

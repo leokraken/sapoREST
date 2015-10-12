@@ -2,6 +2,7 @@ package com.sapo.entities;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import java.util.List;
 
 
 /**
@@ -21,10 +22,9 @@ public class Administrador implements Serializable {
 
 	private String nombre;
 
-	//bi-directional many-to-one association to ExternalLoginAccount
-	@ManyToOne
-	@JoinColumn(name="account_type")
-	private ExternalLoginAccount externalLoginAccount;
+	//bi-directional many-to-one association to TokensAdministrador
+	@OneToMany(mappedBy="administradore")
+	private List<TokensAdministrador> tokensAdministradors;
 
 	public Administrador() {
 	}
@@ -53,12 +53,26 @@ public class Administrador implements Serializable {
 		this.nombre = nombre;
 	}
 
-	public ExternalLoginAccount getExternalLoginAccount() {
-		return this.externalLoginAccount;
+	public List<TokensAdministrador> getTokensAdministradors() {
+		return this.tokensAdministradors;
 	}
 
-	public void setExternalLoginAccount(ExternalLoginAccount externalLoginAccount) {
-		this.externalLoginAccount = externalLoginAccount;
+	public void setTokensAdministradors(List<TokensAdministrador> tokensAdministradors) {
+		this.tokensAdministradors = tokensAdministradors;
+	}
+
+	public TokensAdministrador addTokensAdministrador(TokensAdministrador tokensAdministrador) {
+		getTokensAdministradors().add(tokensAdministrador);
+		tokensAdministrador.setAdministradore(this);
+
+		return tokensAdministrador;
+	}
+
+	public TokensAdministrador removeTokensAdministrador(TokensAdministrador tokensAdministrador) {
+		getTokensAdministradors().remove(tokensAdministrador);
+		tokensAdministrador.setAdministradore(null);
+
+		return tokensAdministrador;
 	}
 
 }

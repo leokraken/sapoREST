@@ -23,13 +23,11 @@ public class CarritoProducto implements Serializable {
 	@Column(name="cant_total")
 	private Integer cantTotal;
 
-	//bi-directional many-to-one association to Av
 	@ManyToOne
 	@MapsId("idAv")
 	@JoinColumn(name="id_av")
 	private Av av;
 
-	//bi-directional many-to-one association to Producto
 	@ManyToOne
 	@MapsId("idProducto")
 	@JoinColumn(name="id_producto")

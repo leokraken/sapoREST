@@ -80,8 +80,11 @@ public class templateController {
 		Template t = new Template();
 		t.setDescripcion(datetemplate.getDescripcion());
 		t.setNombre(datetemplate.getNombre());
+		t.setCategorias(new ArrayList<Categoria>());
 		//t.setCategorias(categorias);
 		for(DataCategoria dc : datetemplate.getCategorias()){
+			System.out.println("Print data id");
+			System.out.println(dc.getID());
 			t.getCategorias().add(em.find(Categoria.class, dc.getID()));
 		}
 		try{

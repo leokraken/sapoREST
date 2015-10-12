@@ -5,10 +5,6 @@ import javax.persistence.*;
 import java.util.List;
 
 
-/**
- * The persistent class for the templates database table.
- * 
- */
 @Entity
 @Table(name="templates")
 @NamedQuery(name="Template.findAll", query="SELECT t FROM Template t")
@@ -16,14 +12,13 @@ public class Template implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	private Integer id;
 
 	private String descripcion;
 
 	private String nombre;
 
-	//bi-directional many-to-many association to Categoria
 	@ManyToMany
 	@JoinTable(
 		name="template_categoria"

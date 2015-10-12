@@ -21,7 +21,8 @@ import javax.ws.rs.core.Response;
 import com.sapo.datatypes.DataAlmacen;
 import com.sapo.datatypes.DataPersona;
 import com.sapo.entities.Av;
-import com.sapo.entities.ExternalLoginAccount;
+import com.sapo.entities.TokensUsuario;
+import com.sapo.entities.TokensUsuarioPK;
 import com.sapo.entities.Usuario;
 
 @Stateless
@@ -85,7 +86,6 @@ public class usuariosController {
 			u.setApellido(dp.getApellido());
 			u.setId(dp.getId());
 			u.setNombre(dp.getNombre());
-			u.setExternalLoginAccount(em.find(ExternalLoginAccount.class, dp.getAccount_id()));
 			
         	em.persist(u); 
         	em.flush();	
@@ -104,7 +104,6 @@ public class usuariosController {
     public void updateUsuario(@PathParam(value="usuario") String id,DataPersona user){
 		Usuario u = em.find(Usuario.class, id);
 		u.setApellido(user.getApellido());
-		u.setExternalLoginAccount(em.find(ExternalLoginAccount.class, user.getAccount_id()));
 		u.setNombre(user.getNombre());
     	em.merge(u);    	
     }
@@ -139,5 +138,5 @@ public class usuariosController {
 		
 		return ret;
 	}
-    
+	   
 }

@@ -5,10 +5,6 @@ import javax.persistence.*;
 import java.util.List;
 
 
-/**
- * The persistent class for the avs database table.
- * 
- */
 @Entity
 @Table(name="avs")
 @NamedQuery(name="Av.findAll", query="SELECT a FROM Av a")
@@ -16,7 +12,7 @@ public class Av implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	private Long id;
 
 	private String descripcion;
@@ -24,6 +20,19 @@ public class Av implements Serializable {
 	private String nombre;
 
 	private String url;
+
+	//bi-directional many-to-many association to Categoria
+	@ManyToMany
+	@JoinTable(
+		name="avs_categorias"
+		, joinColumns={
+			@JoinColumn(name="id_av")
+			}
+		, inverseJoinColumns={
+			@JoinColumn(name="id_categoria")
+			}
+		)
+	private List<Categoria> categorias;
 
 	//bi-directional many-to-one association to Usuario
 	@ManyToOne
@@ -41,19 +50,6 @@ public class Av implements Serializable {
 	//bi-directional many-to-many association to Usuario
 	@ManyToMany(mappedBy="avs2")
 	private List<Usuario> usuarios;
-
-	//bi-directional many-to-many association to Categoria
-	@ManyToMany
-	@JoinTable(
-		name="avs_categorias"
-		, joinColumns={
-			@JoinColumn(name="id_av")
-			}
-		, inverseJoinColumns={
-			@JoinColumn(name="id_categoria")
-			}
-		)
-	private List<Categoria> categorias;
 
 	public Av() {
 	}
@@ -88,6 +84,14 @@ public class Av implements Serializable {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public List<Categoria> getCategorias() {
+		return this.categorias;
+	}
+
+	public void setCategorias(List<Categoria> categorias) {
+		this.categorias = categorias;
 	}
 
 	public Usuario getUsuario() {
@@ -148,14 +152,6 @@ public class Av implements Serializable {
 
 	public void setUsuarios(List<Usuario> usuarios) {
 		this.usuarios = usuarios;
-	}
-
-	public List<Categoria> getCategorias() {
-		return this.categorias;
-	}
-
-	public void setCategorias(List<Categoria> categorias) {
-		this.categorias = categorias;
 	}
 
 }

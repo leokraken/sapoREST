@@ -4,6 +4,10 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 
+/**
+ * The persistent class for the atributos database table.
+ * 
+ */
 @Entity
 @Table(name="atributos")
 @NamedQuery(name="Atributo.findAll", query="SELECT a FROM Atributo a")
@@ -11,7 +15,6 @@ public class Atributo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
 	private String descripcion;

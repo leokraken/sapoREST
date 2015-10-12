@@ -26,6 +26,10 @@ public class Usuario implements Serializable {
 	@OneToMany(mappedBy="usuario")
 	private List<Av> avs1;
 
+	//bi-directional many-to-one association to TokensUsuario
+	@OneToMany(mappedBy="usuario")
+	private List<TokensUsuario> tokensUsuarios;
+
 	//bi-directional many-to-many association to Av
 	@ManyToMany
 	@JoinTable(
@@ -38,11 +42,6 @@ public class Usuario implements Serializable {
 			}
 		)
 	private List<Av> avs2;
-
-	//bi-directional many-to-one association to ExternalLoginAccount
-	@ManyToOne
-	@JoinColumn(name="account_type")
-	private ExternalLoginAccount externalLoginAccount;
 
 	public Usuario() {
 	}
@@ -93,20 +92,34 @@ public class Usuario implements Serializable {
 		return avs1;
 	}
 
+	public List<TokensUsuario> getTokensUsuarios() {
+		return this.tokensUsuarios;
+	}
+
+	public void setTokensUsuarios(List<TokensUsuario> tokensUsuarios) {
+		this.tokensUsuarios = tokensUsuarios;
+	}
+
+	public TokensUsuario addTokensUsuario(TokensUsuario tokensUsuario) {
+		getTokensUsuarios().add(tokensUsuario);
+		tokensUsuario.setUsuario(this);
+
+		return tokensUsuario;
+	}
+
+	public TokensUsuario removeTokensUsuario(TokensUsuario tokensUsuario) {
+		getTokensUsuarios().remove(tokensUsuario);
+		tokensUsuario.setUsuario(null);
+
+		return tokensUsuario;
+	}
+
 	public List<Av> getAvs2() {
 		return this.avs2;
 	}
 
 	public void setAvs2(List<Av> avs2) {
 		this.avs2 = avs2;
-	}
-
-	public ExternalLoginAccount getExternalLoginAccount() {
-		return this.externalLoginAccount;
-	}
-
-	public void setExternalLoginAccount(ExternalLoginAccount externalLoginAccount) {
-		this.externalLoginAccount = externalLoginAccount;
 	}
 
 }
