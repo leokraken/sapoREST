@@ -143,4 +143,25 @@ public class categoriaController {
 		return Response.status(200).build();
 	}
    
+	@GET
+	@Path("{id}/productos")
+	@Produces(MediaType.APPLICATION_JSON)
+    public Response getProductosCategoria(@PathParam(value="id")Long id){
+    	Categoria cat = em.find(Categoria.class, id);
+    	if(cat==null){
+    		return Response.status(500).entity("Categoria no existe").build();
+    	}
+    	List<DataProducto> ret = new ArrayList<DataProducto>();
+    	for(Producto p : cat.getProductos()){
+    		DataProducto dp = new DataProducto();
+    		dp.setCategoria(p.getCategoria().getId());
+    		dp.setDescripcion(p.getDescripcion());
+    		dp.setID(p.getId());
+    		dp.setIsgenerico(p.getGenerico());
+    		dp.setNombre(p.getNombre());
+    		ret.add(dp);
+    	}
+    	return Response.status(200).entity(ret).build();
+    }
+	
 }
