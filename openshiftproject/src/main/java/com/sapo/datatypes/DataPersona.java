@@ -5,7 +5,7 @@ public class DataPersona {
 	private String id;
 	private String apellido;
 	private String nombre;
-	private int account_id;
+
 	public String getId() {
 		return id;
 	}
@@ -24,11 +24,5 @@ public class DataPersona {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-	public int getAccount_id() {
-		return account_id;
-	}
-	public void setAccount_id(int account_id) {
-		this.account_id = account_id;
-	}
-	
+
 }

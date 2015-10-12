@@ -21,8 +21,6 @@ import javax.ws.rs.core.Response;
 import com.sapo.datatypes.DataAlmacen;
 import com.sapo.datatypes.DataPersona;
 import com.sapo.entities.Av;
-import com.sapo.entities.TokensUsuario;
-import com.sapo.entities.TokensUsuarioPK;
 import com.sapo.entities.Usuario;
 
 @Stateless
@@ -38,8 +36,8 @@ public class usuariosController {
 	
     public usuariosController() {
     }
-    //remover para ver json
-	@GET
+
+    @GET
 	@Path("datapersona")
 	@Produces(MediaType.APPLICATION_JSON)
     public DataPersona getDp(){
@@ -134,8 +132,7 @@ public class usuariosController {
 			da.setUrl(a.getUrl());
 			da.setUsuario(u.getId());
 			ret.add(da);
-		}
-		
+		}	
 		return ret;
 	}
 	   

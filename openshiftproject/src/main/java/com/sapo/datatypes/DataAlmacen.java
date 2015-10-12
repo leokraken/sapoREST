@@ -1,5 +1,7 @@
 package com.sapo.datatypes;
 
+import java.util.List;
+
 public class DataAlmacen {
 
 	private Long id;
@@ -8,6 +10,9 @@ public class DataAlmacen {
 	private String url;
 	private String usuario;
 	
+	List<DataPersona> colaboradores;
+	List<DataCategoria> categorias;
+	List<DataStock> stockproductos;
 	
 	public Long getId() {
 		return id;
@@ -38,6 +43,25 @@ public class DataAlmacen {
 	}
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
+	}
+
+	public List<DataCategoria> getCategorias() {
+		return categorias;
+	}
+	public void setCategorias(List<DataCategoria> categorias) {
+		this.categorias = categorias;
+	}
+	public List<DataStock> getStockproductos() {
+		return stockproductos;
+	}
+	public void setStockproductos(List<DataStock> stockproductos) {
+		this.stockproductos = stockproductos;
+	}
+	public List<DataPersona> getColaboradores() {
+		return colaboradores;
+	}
+	public void setColaboradores(List<DataPersona> colaboradores) {
+		this.colaboradores = colaboradores;
 	}
 	
 	

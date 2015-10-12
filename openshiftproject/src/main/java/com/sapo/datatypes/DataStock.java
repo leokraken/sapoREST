@@ -3,6 +3,8 @@ package com.sapo.datatypes;
 public class DataStock {
 	private Long AvID;
 	private Long ProductoID;
+	private String nombre;
+	private String descripcion;
 	private int cantidad;
 	
 	
@@ -24,6 +26,17 @@ public class DataStock {
 	public void setCantidad(int cantidad) {
 		this.cantidad = cantidad;
 	}
+	public String getNombre() {
+		return nombre;
+	}
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+	public String getDescripcion() {
+		return descripcion;
+	}
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
 	
-
 }

@@ -18,14 +18,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.sapo.datatypes.DataAlmacen;
+import com.sapo.datatypes.DataCategoria;
+import com.sapo.datatypes.DataPersona;
 import com.sapo.datatypes.DataStock;
 import com.sapo.entities.Av;
 import com.sapo.entities.Categoria;
 import com.sapo.entities.Producto;
 import com.sapo.entities.Stock;
 import com.sapo.entities.StockPK;
-import com.sapo.entities.TokensUsuario;
-import com.sapo.entities.TokensUsuarioPK;
 import com.sapo.entities.Usuario;
 
 
@@ -64,15 +64,52 @@ public class almacenesController {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-	public DataAlmacen getAlmacen(@PathParam("id") Long id){
+	public Response getAlmacen(@PathParam("id") Long id){
 		
 		Av a = em.find(Av.class,id);
+		if(a==null)
+			return Response.status(204).build();
+		
 		DataAlmacen da = new DataAlmacen();
 		da.setId(id);
 		da.setDescripcion(a.getDescripcion());
 		da.setNombre(a.getNombre());
 		da.setUrl(a.getUrl());
-		return da;
+		da.setUsuario(a.getUsuario().getId());
+		
+		List<DataStock> stock = new ArrayList<DataStock>();
+		List<DataCategoria> categorias = new ArrayList<DataCategoria>();
+		List<DataPersona> colaboradores = new ArrayList<DataPersona>();
+		
+		for(Usuario u : a.getUsuarios()){
+			DataPersona dp = new DataPersona();
+			dp.setId(u.getId());
+			dp.setNombre(u.getNombre());
+			dp.setApellido(u.getApellido());
+			colaboradores.add(dp);
+		}
+		for(Stock s : a.getStocks()){
+			DataStock ds = new DataStock();
+			ds.setProductoID(s.getProducto().getId());
+			ds.setNombre(s.getProducto().getNombre());
+			ds.setCantidad(s.getCantidad());
+			ds.setDescripcion(s.getProducto().getDescripcion());
+			stock.add(ds);
+		}
+		for(Categoria c : a.getCategorias()){
+			DataCategoria dc = new DataCategoria();
+			dc.setDescripcion(c.getDescripcion());
+			dc.setID(c.getId());
+			dc.setIsgenerico(c.getGenerica());
+			dc.setNombre(c.getNombre());
+			dc.setProductos(null);
+			categorias.add(dc);
+		}
+		da.setCategorias(categorias);
+		da.setColaboradores(colaboradores);
+		da.setStockproductos(stock);
+		
+		return Response.status(200).entity(da).build();
 	}
 
 	@POST
