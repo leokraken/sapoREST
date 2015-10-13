@@ -26,11 +26,11 @@ public class Producto implements Serializable {
 	private String nombre;
 
 	//bi-directional many-to-one association to Atributo
-	@OneToMany(mappedBy="producto")
+	@OneToMany(mappedBy="producto",cascade=CascadeType.REMOVE)
 	private List<Atributo> atributos;
 
 	//bi-directional many-to-one association to CarritoProducto
-	@OneToMany(mappedBy="producto")
+	@OneToMany(mappedBy="producto", cascade=CascadeType.REMOVE)
 	private List<CarritoProducto> carritoProductos;
 
 	//bi-directional many-to-one association to Categoria
@@ -39,7 +39,7 @@ public class Producto implements Serializable {
 	private Categoria categoria;
 
 	//bi-directional many-to-one association to Stock
-	@OneToMany(mappedBy="producto")
+	@OneToMany(mappedBy="producto",cascade=CascadeType.REMOVE)
 	private List<Stock> stocks;
 
 	public Producto() {

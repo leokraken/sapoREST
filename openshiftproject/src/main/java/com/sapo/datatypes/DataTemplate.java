@@ -3,15 +3,15 @@ package com.sapo.datatypes;
 import java.util.List;
 
 public class DataTemplate {
-	private int ID;
+	private Long ID;
 	private String descripcion;
 	private String nombre;
 	private List<DataCategoria> categorias;
 	
-	public int getID() {
+	public Long getID() {
 		return ID;
 	}
-	public void setID(int iD) {
+	public void setID(Long iD) {
 		ID = iD;
 	}
 	public String getDescripcion() {

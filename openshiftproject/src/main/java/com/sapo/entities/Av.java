@@ -40,15 +40,15 @@ public class Av implements Serializable {
 	private Usuario usuario;
 
 	//bi-directional many-to-one association to CarritoProducto
-	@OneToMany(mappedBy="av")
+	@OneToMany(mappedBy="av", cascade=CascadeType.REMOVE)
 	private List<CarritoProducto> carritoProductos;
 
 	//bi-directional many-to-one association to Stock
-	@OneToMany(mappedBy="av")
+	@OneToMany(mappedBy="av", cascade=CascadeType.REMOVE)
 	private List<Stock> stocks;
 
 	//bi-directional many-to-many association to Usuario
-	@ManyToMany(mappedBy="avs2")
+	@ManyToMany(mappedBy="avs2", cascade=CascadeType.REMOVE)
 	private List<Usuario> usuarios;
 
 	public Av() {

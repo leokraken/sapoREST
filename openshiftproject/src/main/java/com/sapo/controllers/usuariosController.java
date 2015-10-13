@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -160,5 +161,17 @@ public class usuariosController {
 		}	
 		return ret;
 	}
+	
+	@DELETE
+	@Path("{usuario}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteUsuario(@PathParam(value = "usuario") String usuario){
+		Usuario u = em.find(Usuario.class, usuario);
+		if(u!=null){
+			em.remove(u);
+		}
+		return Response.status(200).build();
+	}
+	
 	   
 }

@@ -133,20 +133,6 @@ public class categoriaController {
 		}
 
     }
-		
-	//si es generica solo admin
-	//especifica usuario
-	@DELETE
-	@Path("{categoriaID}")
-	@Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-	public Response deleteCategoria(@PathParam(value="categoriaID") Long catid){
-		Categoria cat = em.find(Categoria.class, catid);
-		if(cat==null)
-			return Response.status(500).entity("Categoria no econtrada...").build();
-		em.remove(cat);
-		return Response.status(200).build();
-	}
    
 	//all
 	@GET
@@ -169,5 +155,15 @@ public class categoriaController {
     	}
     	return Response.status(200).entity(ret).build();
     }
+	
+	@DELETE
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+    public Response deleteCategoria(@PathParam(value="id")Long id){
+		Categoria c = em.find(Categoria.class, id);
+		if(c!=null)
+			em.remove(c);
+		return Response.status(200).build();
+	}
 	
 }

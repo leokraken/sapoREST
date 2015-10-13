@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -133,4 +134,15 @@ public class productoController {
 		return Response.status(200).build();
 	}
 
+	@DELETE
+	@Path("{id}")
+	@Produces({MediaType.APPLICATION_JSON,MediaType.TEXT_PLAIN})
+    @Consumes(MediaType.APPLICATION_JSON)
+	public Response deleteProducto(@PathParam(value="id") Long id){
+		Producto p = em.find(Producto.class, id);
+		if(p!=null)
+			em.remove(p);
+		return Response.status(200).build();
+	}
+	
 }

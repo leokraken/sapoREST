@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -110,4 +111,14 @@ public class administradorController {
 		return Response.ok().build();
     }
 
+	@DELETE
+	@Path("{id}")
+	@Produces({MediaType.APPLICATION_JSON,MediaType.TEXT_PLAIN})
+    public Response deleteAdministrador(@PathParam(value="id")String id){
+		Administrador a = em.find(Administrador.class, id);
+		if(a!=null)
+			em.remove(a);
+		return Response.status(200).build();
+	}
+	
 }

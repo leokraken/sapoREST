@@ -9,14 +9,17 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.sapo.datatypes.DataCategoria;
+import com.sapo.datatypes.DataResponse;
 import com.sapo.datatypes.DataTemplate;
 import com.sapo.entities.Categoria;
 import com.sapo.entities.Template;
@@ -98,5 +101,44 @@ public class templateController {
 		}
 		//creado
 		return Response.status(201).entity(t).build();
+	}
+	
+	@GET
+	@Path("{templateID}")
+	@Produces(MediaType.APPLICATION_JSON)	
+	public Response createTemplate(@PathParam(value="templateID")Long id){
+		Template t = em.find(Template.class, id);
+		if(t!=null){
+			DataTemplate dt = new DataTemplate();
+			dt.setDescripcion(t.getDescripcion());
+			dt.setID(t.getId());
+			dt.setNombre(t.getNombre());
+			dt.setCategorias(new ArrayList<DataCategoria>());
+			for(Categoria c : t.getCategorias()){
+				DataCategoria dc = new DataCategoria();
+				dc.setDescripcion(c.getDescripcion());
+				dc.setID(c.getId());
+				dc.setIsgenerico(c.getGenerica());
+				dc.setNombre(c.getNombre());
+				dt.getCategorias().add(dc);
+			}
+			return Response.status(200).entity(dt).build();
+
+		}else{
+			DataResponse dr = new DataResponse();
+			dr.setMensaje("No existe template");
+			return Response.status(500).entity(dr).build();
+		}
+	}
+	
+	
+	@DELETE
+	@Path("{templateID}")
+	@Produces(MediaType.APPLICATION_JSON)	
+	public Response deleteTemplate(@PathParam(value="templateID")Long id){
+		Template t = em.find(Template.class, id);
+		if(t!=null)
+			em.remove(t);
+		return Response.status(200).build();
 	}
 }

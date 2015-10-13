@@ -30,7 +30,7 @@ public class Categoria implements Serializable {
 	private List<Av> avs;
 
 	//bi-directional many-to-one association to Producto
-	@OneToMany(mappedBy="categoria")
+	@OneToMany(mappedBy="categoria", cascade=CascadeType.REMOVE)
 	private List<Producto> productos;
 
 	//bi-directional many-to-many association to Template

@@ -25,11 +25,11 @@ public class Usuario implements Serializable {
 	private String token;
 	
 	//bi-directional many-to-one association to Av
-	@OneToMany(mappedBy="usuario")
+	@OneToMany(mappedBy="usuario",cascade=CascadeType.REMOVE)
 	private List<Av> avs1;
 
 	//bi-directional many-to-many association to Av
-	@ManyToMany
+	@ManyToMany(cascade=CascadeType.REMOVE)
 	@JoinTable(
 		name="usuarios_invitados"
 		, joinColumns={
