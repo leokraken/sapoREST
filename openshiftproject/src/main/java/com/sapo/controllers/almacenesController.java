@@ -22,6 +22,7 @@ import javax.ws.rs.core.Response;
 import com.sapo.datatypes.DataAlmacen;
 import com.sapo.datatypes.DataCategoria;
 import com.sapo.datatypes.DataPersona;
+import com.sapo.datatypes.DataProducto;
 import com.sapo.datatypes.DataStock;
 import com.sapo.entities.Av;
 import com.sapo.entities.Categoria;
@@ -190,5 +191,31 @@ public class almacenesController {
 		return Response.status(200).build();
 	}
 	
+	
+	@GET
+	@Path("{id}/productos/categoria/{categoriaID}")
+	@Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+	public Response getProductosByCategoria(@PathParam("id") Long id, @PathParam("categoriaID") Long idcat){
+		
+		Av a = em.find(Av.class,id);
+		if(a==null)
+			return Response.status(204).build();
+		List<DataProducto> productos = new ArrayList<DataProducto>();
+		for(Stock s : a.getStocks()){
+			if(s.getProducto().getCategoria().getId().equals(idcat)){
+				DataProducto dp = new DataProducto();
+				dp.setID(s.getProducto().getId());
+				dp.setDescripcion(s.getProducto().getDescripcion());
+				dp.setIsgenerico(s.getProducto().getGenerico());
+				dp.setNombre(s.getProducto().getNombre());
+				dp.setCategoria(s.getProducto().getCategoria().getId());
+				productos.add(dp);	
+			}
+		}
+		
+		return Response.status(200).entity(productos).build();
+	}
+
 	
 }
