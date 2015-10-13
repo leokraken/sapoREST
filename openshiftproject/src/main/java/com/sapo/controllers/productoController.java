@@ -92,10 +92,10 @@ public class productoController {
     	try{
         	em.persist(p); 
         	em.flush();
-			return Response.ok().build();
+			return Response.status(201).entity(p).build();
 
     	}catch(Exception e){
-			return Response.serverError().entity("Producto ya existe").build();		
+			return Response.status(409).build();		
     	}
 
 	}

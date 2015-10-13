@@ -21,6 +21,8 @@ import javax.ws.rs.core.Response;
 import com.sapo.datatypes.DataAlmacen;
 import com.sapo.datatypes.DataPersona;
 import com.sapo.entities.Av;
+import com.sapo.entities.TokensUsuario;
+import com.sapo.entities.TokensUsuarioPK;
 import com.sapo.entities.Usuario;
 
 @Stateless
@@ -81,17 +83,40 @@ public class usuariosController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addUsuario(DataPersona dp){
 		try{
-			Usuario u = new Usuario();
-			u.setApellido(dp.getApellido());
-			u.setId(dp.getId());
-			u.setNombre(dp.getNombre());
+			Usuario login = em.find(Usuario.class, dp.getId());
+			if(login==null){ 
+				//creo usuario
+				Usuario u = new Usuario();
+				u.setApellido(dp.getApellido());
+				u.setId(dp.getId());
+				u.setNombre(dp.getNombre());
+				
+	        	em.persist(u); 
+	        	em.flush();	
+	        	
+	        	//guardo token
+	        	TokensUsuario tu = new TokensUsuario();
+	        	TokensUsuarioPK tupk = new TokensUsuarioPK();
+	        	tupk.setToken(dp.getToken());
+	        	tupk.setUsuarioid(dp.getId());
+	        	tu.setId(tupk);
+	        	tu.setUsuario(u);
+	        	em.persist(tu);
+	        	em.flush();
+	        	
+	        	return Response.status(201).build(); //created					
+			}else{
+				//verifico login
+				for(TokensUsuario tokens : login.getTokensUsuarios()){
+					if(tokens.getId().getToken().equals(dp.getToken()))
+						return Response.status(200).build();
+				}
+				return Response.status(401).build();
+			}
 			
-        	em.persist(u); 
-        	em.flush();	
-        	return Response.ok().build();
 		}catch(Exception e){
 			e.printStackTrace();
-			return Response.serverError().entity("Usuario ya existe").build();
+			return Response.status(500).entity("Usuario ya existe").build();
 		}
 
     }
@@ -110,13 +135,21 @@ public class usuariosController {
 	@POST
 	@Path("{usuario}/almacenes/create")
 	@Produces(MediaType.APPLICATION_JSON)
-    public void crearAlmacenUsuario(@PathParam(value = "usuario") String usuario, DataAlmacen da){
+    public Response crearAlmacenUsuario(@PathParam(value = "usuario") String usuario, DataAlmacen da){
     	Av almacen = new Av();
     	almacen.setNombre(da.getNombre());
     	almacen.setDescripcion(da.getDescripcion());
     	almacen.setUrl(da.getUrl());
     	almacen.setUsuario(em.find(Usuario.class,usuario));
+    	try{
+    		
+    	}catch(Exception e){
+    		//conflict
+    		return Response.status(409).build();
+    	}
     	em.persist(almacen);
+    	em.flush();
+    	return Response.status(201).entity(almacen).build();
 	}
 	
 	@GET

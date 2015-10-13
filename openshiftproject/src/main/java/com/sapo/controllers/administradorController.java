@@ -20,6 +20,8 @@ import javax.ws.rs.core.Response;
 
 import com.sapo.datatypes.DataPersona;
 import com.sapo.entities.Administrador;
+import com.sapo.entities.TokensAdministrador;
+import com.sapo.entities.TokensAdministradorPK;
 
 /*
  * Solo administradores auth
@@ -72,18 +74,42 @@ public class administradorController {
 	@Path("/create")
 	@Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addAdministrador(DataPersona dataadmin){
+    public Response addAdministrador(DataPersona dp){
 		try{
-	    	Administrador admin = new Administrador();
-	    	admin.setApellido(dataadmin.getApellido());
-	    	admin.setNombre(dataadmin.getNombre());
-	    	admin.setId(dataadmin.getId());
-        	em.persist(admin); 
-        	em.flush();		
-			return Response.ok().build();
-
+			Administrador login = em.find(Administrador.class, dp.getId());
+			if(login==null){ 
+				//creo usuario
+				Administrador u = new Administrador();
+				u.setApellido(dp.getApellido());
+				u.setId(dp.getId());
+				u.setNombre(dp.getNombre());
+				
+	        	em.persist(u); 
+	        	em.flush();	
+	        	
+	        	//guardo token
+	        	TokensAdministrador tu = new TokensAdministrador();
+	        	TokensAdministradorPK tupk = new TokensAdministradorPK();
+	        	tupk.setToken(dp.getToken());
+	        	tupk.setUsuarioid(dp.getId());
+	        	tu.setId(tupk);
+	        	tu.setAdministradore(u);
+	        	em.persist(tu);
+	        	em.flush();
+	        	
+	        	return Response.status(201).build(); //created					
+			}else{
+				//verifico login
+				for(TokensAdministrador tokens : login.getTokensAdministradors()){
+					if(tokens.getId().getToken().equals(dp.getToken()))
+						return Response.status(200).build();
+				}
+				return Response.status(401).build();
+			}
+			
 		}catch(Exception e){
-			return Response.serverError().entity("Administrador ya existe").build();
+			e.printStackTrace();
+			return Response.status(500).entity("Administrador ya existe").build();
 		}
 
     }

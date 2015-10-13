@@ -105,10 +105,10 @@ public class categoriaController {
 	    	cat.setNombre(datacat.getNombre());	    	
         	em.persist(cat); 
         	em.flush();		
-			return Response.status(201).build();
+			return Response.status(201).entity(cat).build();
 
 		}catch(Exception e){
-			return Response.status(409).entity("Error crear categoría").build();
+			return Response.status(409).build();
 		}
 
     }

@@ -97,6 +97,6 @@ public class templateController {
 			return Response.status(409).build();
 		}
 		//creado
-		return Response.status(201).build();
+		return Response.status(201).entity(t).build();
 	}
 }

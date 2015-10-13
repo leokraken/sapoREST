@@ -46,6 +46,13 @@ public class almacenesController {
     public almacenesController() {
     }
 
+    @GET
+	@Path("dataalmacen")
+	@Produces(MediaType.APPLICATION_JSON)
+	public DataAlmacen getDataAlmacen(){
+    	return new DataAlmacen();
+    }
+    
 	@GET
 	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)

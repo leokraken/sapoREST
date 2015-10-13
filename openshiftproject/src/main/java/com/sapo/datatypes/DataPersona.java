@@ -5,7 +5,8 @@ public class DataPersona {
 	private String id;
 	private String apellido;
 	private String nombre;
-
+	private String token;
+	
 	public String getId() {
 		return id;
 	}
@@ -24,5 +25,11 @@ public class DataPersona {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-
+	public String getToken() {
+		return token;
+	}
+	public void setToken(String token) {
+		this.token = token;
+	}
+	
 }
