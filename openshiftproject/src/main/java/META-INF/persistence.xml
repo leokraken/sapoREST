@@ -12,10 +12,6 @@
 		<class>com.sapo.entities.Stock</class>
 		<class>com.sapo.entities.StockPK</class>
 		<class>com.sapo.entities.Template</class>
-		<class>com.sapo.entities.TokensAdministrador</class>
-		<class>com.sapo.entities.TokensAdministradorPK</class>
-		<class>com.sapo.entities.TokensUsuario</class>
-		<class>com.sapo.entities.TokensUsuarioPK</class>
 		<class>com.sapo.entities.Usuario</class>
 	</persistence-unit>
 </persistence>

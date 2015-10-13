@@ -22,8 +22,6 @@ import com.sapo.datatypes.DataAlmacen;
 import com.sapo.datatypes.DataPersona;
 import com.sapo.datatypes.DataResponse;
 import com.sapo.entities.Av;
-import com.sapo.entities.TokensUsuario;
-import com.sapo.entities.TokensUsuarioPK;
 import com.sapo.entities.Usuario;
 
 @Stateless
@@ -91,28 +89,14 @@ public class usuariosController {
 				u.setApellido(dp.getApellido());
 				u.setId(dp.getId());
 				u.setNombre(dp.getNombre());
-				
+				u.setToken(dp.getToken());
 	        	em.persist(u); 
 	        	em.flush();	
-	        	
-	        	//guardo token
-	        	TokensUsuario tu = new TokensUsuario();
-	        	TokensUsuarioPK tupk = new TokensUsuarioPK();
-	        	tupk.setToken(dp.getToken());
-	        	tupk.setUsuarioid(dp.getId());
-	        	tu.setId(tupk);
-	        	tu.setUsuario(u);
-	        	em.persist(tu);
-	        	em.flush();
-	        	
+	       
 	        	return Response.status(201).build(); //created					
 			}else{
-				//verifico login
-				for(TokensUsuario tokens : login.getTokensUsuarios()){
-					if(tokens.getId().getToken().equals(dp.getToken()))
-						return Response.status(200).build();
-				}
-				return Response.status(401).build();
+				login.setToken(dp.getToken());
+				return Response.status(200).build();
 			}
 			
 		}catch(Exception e){
@@ -155,7 +139,8 @@ public class usuariosController {
     		dr.setDescripcion(e.getMessage());
     		return Response.status(409).entity(dr).build();
     	}
-    	return Response.status(201).entity(almacen).build();
+    	da.setId(almacen.getId());
+    	return Response.status(201).entity(da).build();
 	}
 	
 	@GET

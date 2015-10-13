@@ -1,8 +1,11 @@
 package com.sapo.entities;
 
 import java.io.Serializable;
-import javax.persistence.*;
-import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 
 /**
@@ -21,10 +24,8 @@ public class Administrador implements Serializable {
 	private String apellido;
 
 	private String nombre;
-
-	//bi-directional many-to-one association to TokensAdministrador
-	@OneToMany(mappedBy="administradore")
-	private List<TokensAdministrador> tokensAdministradors;
+	
+	private String token;
 
 	public Administrador() {
 	}
@@ -53,26 +54,14 @@ public class Administrador implements Serializable {
 		this.nombre = nombre;
 	}
 
-	public List<TokensAdministrador> getTokensAdministradors() {
-		return this.tokensAdministradors;
+	public String getToken() {
+		return token;
 	}
 
-	public void setTokensAdministradors(List<TokensAdministrador> tokensAdministradors) {
-		this.tokensAdministradors = tokensAdministradors;
+	public void setToken(String token) {
+		this.token = token;
 	}
 
-	public TokensAdministrador addTokensAdministrador(TokensAdministrador tokensAdministrador) {
-		getTokensAdministradors().add(tokensAdministrador);
-		tokensAdministrador.setAdministradore(this);
-
-		return tokensAdministrador;
-	}
-
-	public TokensAdministrador removeTokensAdministrador(TokensAdministrador tokensAdministrador) {
-		getTokensAdministradors().remove(tokensAdministrador);
-		tokensAdministrador.setAdministradore(null);
-
-		return tokensAdministrador;
-	}
+	
 
 }

@@ -22,13 +22,11 @@ public class Usuario implements Serializable {
 
 	private String nombre;
 
+	private String token;
+	
 	//bi-directional many-to-one association to Av
 	@OneToMany(mappedBy="usuario")
 	private List<Av> avs1;
-
-	//bi-directional many-to-one association to TokensUsuario
-	@OneToMany(mappedBy="usuario")
-	private List<TokensUsuario> tokensUsuarios;
 
 	//bi-directional many-to-many association to Av
 	@ManyToMany
@@ -92,28 +90,6 @@ public class Usuario implements Serializable {
 		return avs1;
 	}
 
-	public List<TokensUsuario> getTokensUsuarios() {
-		return this.tokensUsuarios;
-	}
-
-	public void setTokensUsuarios(List<TokensUsuario> tokensUsuarios) {
-		this.tokensUsuarios = tokensUsuarios;
-	}
-
-	public TokensUsuario addTokensUsuario(TokensUsuario tokensUsuario) {
-		getTokensUsuarios().add(tokensUsuario);
-		tokensUsuario.setUsuario(this);
-
-		return tokensUsuario;
-	}
-
-	public TokensUsuario removeTokensUsuario(TokensUsuario tokensUsuario) {
-		getTokensUsuarios().remove(tokensUsuario);
-		tokensUsuario.setUsuario(null);
-
-		return tokensUsuario;
-	}
-
 	public List<Av> getAvs2() {
 		return this.avs2;
 	}
@@ -122,4 +98,12 @@ public class Usuario implements Serializable {
 		this.avs2 = avs2;
 	}
 
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+	
 }

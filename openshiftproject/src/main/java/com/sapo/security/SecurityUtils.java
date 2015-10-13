@@ -4,8 +4,6 @@ import javax.persistence.EntityManager;
 
 import com.sapo.entities.Administrador;
 import com.sapo.entities.Av;
-import com.sapo.entities.TokensAdministrador;
-import com.sapo.entities.TokensUsuario;
 
 public class SecurityUtils {
 	
@@ -14,10 +12,8 @@ public class SecurityUtils {
 		try{
 
 			Administrador a = em.find(Administrador.class, user);
-			for(TokensAdministrador ta : a.getTokensAdministradors()){
-				if(ta.getId().getToken().equals(usertoken))
-					return true;
-			}		
+			if(a.getToken().equals(usertoken))
+				return true;
 		}catch(Exception e){
 			
 		}
@@ -27,11 +23,8 @@ public class SecurityUtils {
 	public Boolean authorizeUser(String usertoken, String user,Long AlmacenID, EntityManager em){		
 		try{
 			Av av = em.find(Av.class, AlmacenID);
-			if(av.getUsuario().getId().equals(user))
-			for(TokensUsuario ta : av.getUsuario().getTokensUsuarios()){
-				if(ta.getId().getToken().equals(usertoken)) 
-					return true;
-			}			
+			if(av.getUsuario().getToken().equals(usertoken))
+				return true;
 		}catch(Exception e){
 			
 		}

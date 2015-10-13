@@ -20,8 +20,6 @@ import javax.ws.rs.core.Response;
 
 import com.sapo.datatypes.DataPersona;
 import com.sapo.entities.Administrador;
-import com.sapo.entities.TokensAdministrador;
-import com.sapo.entities.TokensAdministradorPK;
 
 /*
  * Solo administradores auth
@@ -83,28 +81,13 @@ public class administradorController {
 				u.setApellido(dp.getApellido());
 				u.setId(dp.getId());
 				u.setNombre(dp.getNombre());
-				
+				u.setToken(dp.getToken());
 	        	em.persist(u); 
 	        	em.flush();	
-	        	
-	        	//guardo token
-	        	TokensAdministrador tu = new TokensAdministrador();
-	        	TokensAdministradorPK tupk = new TokensAdministradorPK();
-	        	tupk.setToken(dp.getToken());
-	        	tupk.setUsuarioid(dp.getId());
-	        	tu.setId(tupk);
-	        	tu.setAdministradore(u);
-	        	em.persist(tu);
-	        	em.flush();
-	        	
 	        	return Response.status(201).build(); //created					
 			}else{
-				//verifico login
-				for(TokensAdministrador tokens : login.getTokensAdministradors()){
-					if(tokens.getId().getToken().equals(dp.getToken()))
-						return Response.status(200).build();
-				}
-				return Response.status(401).build();
+				login.setToken(dp.getToken());
+				return Response.status(200).build();
 			}
 			
 		}catch(Exception e){
