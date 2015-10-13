@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 
 import com.sapo.datatypes.DataAlmacen;
 import com.sapo.datatypes.DataPersona;
+import com.sapo.datatypes.DataResponse;
 import com.sapo.entities.Av;
 import com.sapo.entities.TokensUsuario;
 import com.sapo.entities.TokensUsuarioPK;
@@ -116,7 +117,10 @@ public class usuariosController {
 			
 		}catch(Exception e){
 			e.printStackTrace();
-			return Response.status(500).entity("Usuario ya existe").build();
+			DataResponse dr = new DataResponse();
+			dr.setMensaje("Error inesperado");
+			dr.setDescripcion(e.getMessage());
+			return Response.status(500).entity(dr).build();
 		}
 
     }
@@ -142,13 +146,15 @@ public class usuariosController {
     	almacen.setUrl(da.getUrl());
     	almacen.setUsuario(em.find(Usuario.class,usuario));
     	try{
-    		
+        	em.persist(almacen);
+        	em.flush();	
     	}catch(Exception e){
     		//conflict
-    		return Response.status(409).build();
+    		DataResponse dr = new DataResponse();
+    		dr.setMensaje("Error inesperado");
+    		dr.setDescripcion(e.getMessage());
+    		return Response.status(409).entity(dr).build();
     	}
-    	em.persist(almacen);
-    	em.flush();
     	return Response.status(201).entity(almacen).build();
 	}
 	

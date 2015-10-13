@@ -19,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.sapo.datatypes.DataProducto;
+import com.sapo.datatypes.DataResponse;
 import com.sapo.entities.*;
 
 @Stateless
@@ -87,7 +88,13 @@ public class productoController {
    	
     	p.setNombre(dp.getNombre());
     	p.setDescripcion(dp.getDescripcion());
-    	p.setCategoria(em.find(Categoria.class, dp.getCategoria()));
+    	Categoria cat = em.find(Categoria.class, dp.getCategoria());
+    	if(cat==null){
+    		DataResponse dr = new DataResponse();
+    		dr.setMensaje("Categoria "+dp.getCategoria()+" no existe");  		
+    		return Response.status(500).entity(dr).build();
+    	}
+    	p.setCategoria(cat);
     	p.setGenerico(dp.getIsgenerico());
     	try{
         	em.persist(p); 
@@ -95,6 +102,9 @@ public class productoController {
 			return Response.status(201).entity(p).build();
 
     	}catch(Exception e){
+    		DataResponse dr = new DataResponse();
+    		dr.setMensaje("Error inesperado."); 
+    		dr.setDescripcion(e.getMessage());
 			return Response.status(409).build();		
     	}
 
@@ -111,10 +121,16 @@ public class productoController {
     	p.setNombre(dp.getNombre());
     	p.setDescripcion(dp.getDescripcion());
     	p.setGenerico(dp.getIsgenerico());
-    	p.setCategoria(em.find(Categoria.class, dp.getCategoria()));
+       	Categoria cat = em.find(Categoria.class, dp.getCategoria());
+    	if(cat==null){
+    		DataResponse dr = new DataResponse();
+    		dr.setMensaje("Categoria "+dp.getCategoria()+" no existe");  		
+    		return Response.status(500).entity(dr).build();
+    	}
+    	p.setCategoria(cat);
 
 		em.merge(p);
-		return Response.ok().build();
+		return Response.status(200).build();
 	}
 
 }

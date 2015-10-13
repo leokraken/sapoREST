@@ -127,13 +127,17 @@ public class almacenesController {
 	@Path("{id}/agregarcategorias")
     @Consumes(MediaType.APPLICATION_JSON)
 	public Response agregarCategoriasAlmacen(@PathParam("id") Long id, List<Long> categorias){
-		Av a = em.find(Av.class,id);			
-		for(Long cat : categorias){
-			System.out.println(cat);
-			a.getCategorias().add(em.find(Categoria.class, cat));
+		Av a = em.find(Av.class,id);
+		try{
+			for(Long cat : categorias){
+				System.out.println(cat);
+				a.getCategorias().add(em.find(Categoria.class, cat));
+			}		
+		}catch(Exception E){
+			System.out.println("Alguna categoria no existe...");
 		}
 
-		return Response.ok().build();
+		return Response.status(200).build();
 	}
 
 	@POST
