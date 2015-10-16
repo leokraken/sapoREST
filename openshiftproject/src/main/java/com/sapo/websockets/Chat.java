@@ -11,11 +11,10 @@ import javax.websocket.server.ServerEndpoint;
 
 @ServerEndpoint("/echo")
 public class Chat {
-  
 	
     @OnOpen
     public void onConnectionOpen(Session session) {
-    	
+    	//userSession=session;
     	System.out.println("Socket open...");
     }
  

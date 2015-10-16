@@ -1,5 +1,6 @@
 package com.sapo.controllers;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,10 +34,11 @@ public class categoriaController {
 
 	@PersistenceContext(unitName="SAPOLogica")
 	EntityManager em;
-	
-    public categoriaController() {
+		
+    public categoriaController() throws URISyntaxException {
     }
 
+	
 	@GET
 	@Path("datacategoria")
 	@Produces(MediaType.APPLICATION_JSON)
