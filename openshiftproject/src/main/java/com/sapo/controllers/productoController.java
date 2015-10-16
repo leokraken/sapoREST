@@ -100,7 +100,8 @@ public class productoController {
     	try{
         	em.persist(p); 
         	em.flush();
-			return Response.status(201).entity(p).build();
+        	dp.setID(p.getId());
+			return Response.status(201).entity(dp).build();
 
     	}catch(Exception e){
     		DataResponse dr = new DataResponse();

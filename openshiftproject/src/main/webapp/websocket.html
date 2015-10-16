@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 <meta charset="UTF-8">
 <title>Insert title here</title>
  <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
 
-</head>
-<body>
-
-</body>
-</html>
-
-<script>
+<script type="text/javascript">
 var wsUrl;
+var ws;
+function initws(name){
+	
 if (window.location.protocol == 'http:') {
-    wsUrl = 'ws://' + window.location.host + '/openshiftproject/echo'; //8000
+    wsUrl = 'ws://' + window.location.host + '/openshiftproject/chat/'+name; //8000
 } else {
     wsUrl = 'wss://' + window.location.host + ':8443/openshiftproject/echo';
 }
 console.log('WebSockets Url : ' + wsUrl);
-var ws = new WebSocket(wsUrl);
+ws = new WebSocket(wsUrl);
  
 ws.onopen = function(event){
     console.log('WebSocket connection started');
@@ -32,12 +32,51 @@ ws.onclose = function(event){
  
 ws.onmessage = function(event){
     console.log(event.data);
-    $("textarea#outputMessage").val(event.data);
+    $("#mensajes").append('<div>'+event.data+'</div>');
 };
 
-
+}
 function sendmessage(mensaje){
 	ws.send(mensaje);
 }
 
 </script>
+
+
+</head>
+<body>
+
+<div class="ui-field-contain">
+	<label for="text-1">chat</label>
+	<input name="text-1" id="chatroom" data-clear-btn="true" value="" type="text"/>
+</div>
+<button id=wsbutton onclick="initws($('#chatroom').val())">join</button>
+
+<div class="ui-field-contain">
+	<label for="text-1">usuario</label>
+	<input name="text-1" id="user" data-clear-btn="true" value="user" type="text"/>
+</div>
+
+
+<div class="ui-field-contain">
+	<label for="text-1">mensaje</label>
+	<input name="text-1" id="mensaje" data-clear-btn="true" value="" type="text"/>
+</div>
+<button id=sendmbutton onclick="sendmessage($('#user').val() +': '+ $('#mensaje').val());$('#mensaje').val('')">send!</button>
+
+<div id="mensajes">
+
+</div>
+</body>
+</html>
+
+
+<!-- Lo fundamental a tener en cuenta para el chat
+initws(nombretienda) se utiliza para ingresar al chat de una tienda específica
+sendmessage(mensaje) una vez conectado en el paso anterior se procede a el envío de mensajes
+no tiene mucha magia extra...
+
+
+ -->
+
+

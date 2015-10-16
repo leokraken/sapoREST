@@ -7,22 +7,25 @@ import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-@ServerEndpoint("/echo")
+@ServerEndpoint("/chat/{av}")
 public class Chat {
 	
     @OnOpen
-    public void onConnectionOpen(Session session) {
-    	//userSession=session;
+    public void onConnectionOpen(Session session, @PathParam(value="av")String av) {
+    	session.getUserProperties().put("av", av);
     	System.out.println("Socket open...");
     }
  
     @OnMessage
     public void onMessage(Session session, String message) throws IOException, EncodeException {
+    	String av = (String)session.getUserProperties().get("av");
     	for(Session s : session.getOpenSessions()){   	
-    		s.getBasicRemote().sendObject("broadcast fucker");
-    		//"Echo: "+message;    	
+    		if(s.getUserProperties().get("av").equals(av)){
+    			s.getBasicRemote().sendObject(message);
+    		}
     	}   	
     }
  
