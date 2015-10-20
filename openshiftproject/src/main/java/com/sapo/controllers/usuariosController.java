@@ -126,6 +126,7 @@ public class usuariosController {
 	@Produces(MediaType.APPLICATION_JSON)
     public Response crearAlmacenUsuario(@PathParam(value = "usuario") String usuario, DataAlmacen da){
     	Av almacen = new Av();
+    	almacen.setId(da.getId());
     	almacen.setNombre(da.getNombre());
     	almacen.setDescripcion(da.getDescripcion());
     	almacen.setUsuario(em.find(Usuario.class,usuario));
