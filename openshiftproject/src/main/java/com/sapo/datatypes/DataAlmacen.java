@@ -4,20 +4,19 @@ import java.util.List;
 
 public class DataAlmacen {
 
-	private Long id;
+	private String id;
 	private String nombre;
 	private String descripcion;
-	private String url;
 	private String usuario;
 	
 	List<DataPersona> colaboradores;
 	List<DataCategoria> categorias;
 	List<DataStock> stockproductos;
 	
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	public String getUsuario() {
@@ -26,12 +25,7 @@ public class DataAlmacen {
 	public void setUsuario(String usuario) {
 		this.usuario = usuario;
 	}
-	public String getUrl() {
-		return url;
-	}
-	public void setUrl(String url) {
-		this.url = url;
-	}
+
 	public String getNombre() {
 		return nombre;
 	}

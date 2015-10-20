@@ -13,6 +13,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -23,7 +24,10 @@ import com.sapo.datatypes.DataAlmacen;
 import com.sapo.datatypes.DataCategoria;
 import com.sapo.datatypes.DataPersona;
 import com.sapo.datatypes.DataProducto;
+import com.sapo.datatypes.DataResponse;
 import com.sapo.datatypes.DataStock;
+import com.sapo.datatypes.DataStockLite;
+import com.sapo.datatypes.DataStockProducto;
 import com.sapo.entities.Av;
 import com.sapo.entities.Categoria;
 import com.sapo.entities.Producto;
@@ -67,7 +71,6 @@ public class almacenesController {
     		da.setId(a.getId());
     		da.setDescripcion(a.getDescripcion());
     		da.setNombre(a.getNombre());
-    		da.setUrl(a.getUrl());
     		ret.add(da);
     	}
     	return ret;
@@ -77,7 +80,7 @@ public class almacenesController {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-	public Response getAlmacen(@PathParam("id") Long id){
+	public Response getAlmacen(@PathParam("id") String id){
 		
 		Av a = em.find(Av.class,id);
 		if(a==null)
@@ -87,7 +90,6 @@ public class almacenesController {
 		da.setId(id);
 		da.setDescripcion(a.getDescripcion());
 		da.setNombre(a.getNombre());
-		da.setUrl(a.getUrl());
 		da.setUsuario(a.getUsuario().getId());
 		
 		List<DataStock> stock = new ArrayList<DataStock>();
@@ -128,7 +130,7 @@ public class almacenesController {
 	@POST
 	@Path("{id}/agregarcategorias")
     @Consumes(MediaType.APPLICATION_JSON)
-	public Response agregarCategoriasAlmacen(@PathParam("id") Long id, List<Long> categorias){
+	public Response agregarCategoriasAlmacen(@PathParam("id") String id, List<Long> categorias){
 		Av a = em.find(Av.class,id);
 		try{
 			for(Long cat : categorias){
@@ -145,7 +147,7 @@ public class almacenesController {
 	@POST
 	@Path("{id}/agregarproductos")
     @Consumes(MediaType.APPLICATION_JSON)
-	public Response agregarProductosAlmacen(@PathParam("id") Long id, List<DataStock> productos){
+	public Response agregarProductosAlmacen(@PathParam("id") String id, List<DataStock> productos){
 		Av a = em.find(Av.class,id);			
 		for(DataStock prod : productos){
 			System.out.println(prod);
@@ -184,7 +186,7 @@ public class almacenesController {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-	public Response deleteAlmacen(@PathParam("id") Long id){
+	public Response deleteAlmacen(@PathParam("id") String id){
 		Av av = em.find(Av.class, id);
 		if(av!=null)
 			em.remove(av);
@@ -196,12 +198,12 @@ public class almacenesController {
 	@Path("{id}/productos/categoria/{categoriaID}")
 	@Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-	public Response getProductosByCategoria(@PathParam("id") Long id, @PathParam("categoriaID") Long idcat){
+	public Response getProductosByCategoria(@PathParam("id") String id, @PathParam("categoriaID") Long idcat){
 		
 		Av a = em.find(Av.class,id);
 		if(a==null)
 			return Response.status(204).build();
-		List<DataProducto> productos = new ArrayList<DataProducto>();
+		List<DataStockProducto> productos = new ArrayList<DataStockProducto>();
 		for(Stock s : a.getStocks()){
 			if(s.getProducto().getCategoria().getId().equals(idcat)){
 				DataProducto dp = new DataProducto();
@@ -210,12 +212,57 @@ public class almacenesController {
 				dp.setIsgenerico(s.getProducto().getGenerico());
 				dp.setNombre(s.getProducto().getNombre());
 				dp.setCategoria(s.getProducto().getCategoria().getId());
-				productos.add(dp);	
+				
+				DataStockProducto dsp = new DataStockProducto();
+				dsp.setProducto(dp);
+				dsp.setCantidad(s.getCantidad());
+				productos.add(dsp);			
 			}
 		}
 		
 		return Response.status(200).entity(productos).build();
 	}
 
+	@GET
+	@Path("datastocklite")
+    @Produces(MediaType.APPLICATION_JSON)
+	public Response getDataStockLite(){
+		return Response.status(200).entity(new DataStockLite()).build();
+	}
+
+	@GET
+	@Path("datastockproducto")
+    @Produces(MediaType.APPLICATION_JSON)
+	public Response getDataStockProducto(){
+		return Response.status(200).entity(new DataStockProducto()).build();
+	}
+	
+	@PUT
+	@Path("{id}/stock/{productoID}/{cantidad}")
+	@Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+	public Response setStockAlmacen(@PathParam(value="id")String idAV, @PathParam(value="productoID") Long productoID, @PathParam(value="cantidad")int cantidad){
+
+		//si no existe lo creo
+		try{
+			StockPK key = new StockPK();
+			key.setIdAv(idAV);;
+			key.setIdProducto(productoID);;
+
+			Stock st = new Stock();
+			st.setCantidad(cantidad);
+			st.setId(key);
+			st.setAv(em.find(Av.class, idAV));
+			st.setProducto(em.find(Producto.class, productoID));
+			em.merge(st);	
+
+		}catch(Exception e){
+			DataResponse dr = new DataResponse();
+			dr.setMensaje("Producto o av no existe.");			
+			return Response.status(500).entity(dr).build();			
+		}
+		return Response.status(200).build();
+	}
+	
 	
 }

@@ -128,7 +128,6 @@ public class usuariosController {
     	Av almacen = new Av();
     	almacen.setNombre(da.getNombre());
     	almacen.setDescripcion(da.getDescripcion());
-    	almacen.setUrl(da.getUrl());
     	almacen.setUsuario(em.find(Usuario.class,usuario));
     	try{
         	em.persist(almacen);
@@ -155,7 +154,6 @@ public class usuariosController {
 			da.setId(a.getId());
 			da.setDescripcion(a.getDescripcion());
 			da.setNombre(a.getNombre());
-			da.setUrl(a.getUrl());
 			da.setUsuario(u.getId());
 			ret.add(da);
 		}	

@@ -13,17 +13,17 @@ public class StockPK implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Column(name="id_av", insertable=false, updatable=false)
-	private Long idAv;
+	private String idAv;
 
 	@Column(name="id_producto", insertable=false, updatable=false)
 	private Long idProducto;
 
 	public StockPK() {
 	}
-	public Long getIdAv() {
+	public String getIdAv() {
 		return this.idAv;
 	}
-	public void setIdAv(Long idAv) {
+	public void setIdAv(String idAv) {
 		this.idAv = idAv;
 	}
 	public Long getIdProducto() {

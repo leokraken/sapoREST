@@ -12,14 +12,11 @@ public class Av implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy= GenerationType.IDENTITY)
-	private Long id;
+	private String id;
 
 	private String descripcion;
 
 	private String nombre;
-
-	private String url;
 
 	//bi-directional many-to-many association to Categoria
 	@ManyToMany
@@ -54,11 +51,11 @@ public class Av implements Serializable {
 	public Av() {
 	}
 
-	public Long getId() {
+	public String getId() {
 		return this.id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -76,14 +73,6 @@ public class Av implements Serializable {
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
-	}
-
-	public String getUrl() {
-		return this.url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
 	}
 
 	public List<Categoria> getCategorias() {
