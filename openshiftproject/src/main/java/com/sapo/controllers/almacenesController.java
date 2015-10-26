@@ -18,8 +18,10 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import com.sapo.datatypes.DataAlmacen;
 import com.sapo.datatypes.DataCategoria;
@@ -49,6 +51,10 @@ public class almacenesController {
 
 	@PersistenceContext(unitName="SAPOLogica")
 	private EntityManager em;
+	
+	@Context
+    UriInfo uriInfo;
+	
 	
 	private SecurityUtils su = new SecurityUtils();
 	
@@ -265,19 +271,24 @@ public class almacenesController {
 				
 			}else{
 				s.setCantidad(cantidad);
+				String mensaje= null;
 				/*Notifico caso sea pertinente*/
 				if(s.getNotifica() && s.getMinimo() > s.getCantidad()){		
 					NotificacionesParametro np = new NotificacionesParametro();
 					np.setAv(em.find(Av.class, idAV));
 					np.setProducto(em.find(Producto.class, productoID));
-					String mensaje="Únicamente cuentas con "+s.getCantidad()+" unidades de "+np.getProducto().getNombre()+"!";
+					mensaje = "Únicamente cuentas con "+s.getCantidad()+" unidades de "+np.getProducto().getNombre()+"!";
 					np.setMensaje(mensaje);
 					em.persist(np);
 					em.flush();
+					
+					//TODO make send message
 				}
+
 			}
 
 		}catch(Exception e){
+			e.printStackTrace();
 			DataResponse dr = new DataResponse();
 			dr.setMensaje("Producto o av no existe.");			
 			return Response.status(500).entity(dr).build();			
@@ -376,7 +387,9 @@ public class almacenesController {
 	@Path("{almacenID}/notificaciones/stock")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getNotificacionesStock(@PathParam(value="almacenID")String almacenID){
-		Query q = em.createQuery("select S from NotificacionesParametro S where S.av.id=:avid");
+		Query q = em.createQuery("select S from NotificacionesParametro S "
+				+ "where S.av.id=:avid"
+				+ " order by S.id DESC");
 		q.setParameter("avid", almacenID);
 		@SuppressWarnings("unchecked")
 		List<NotificacionesParametro> nots = q.getResultList();
