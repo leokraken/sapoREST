@@ -7,6 +7,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -22,6 +23,7 @@ import javax.ws.rs.core.Response;
 
 import com.sapo.datatypes.DataAlmacen;
 import com.sapo.datatypes.DataCategoria;
+import com.sapo.datatypes.DataNotificacion;
 import com.sapo.datatypes.DataPersona;
 import com.sapo.datatypes.DataProducto;
 import com.sapo.datatypes.DataResponse;
@@ -30,6 +32,7 @@ import com.sapo.datatypes.DataStockLite;
 import com.sapo.datatypes.DataStockProducto;
 import com.sapo.entities.Av;
 import com.sapo.entities.Categoria;
+import com.sapo.entities.NotificacionesParametro;
 import com.sapo.entities.Producto;
 import com.sapo.entities.Stock;
 import com.sapo.entities.StockPK;
@@ -250,12 +253,29 @@ public class almacenesController {
 			key.setIdAv(idAV);;
 			key.setIdProducto(productoID);;
 
-			Stock st = new Stock();
-			st.setCantidad(cantidad);
-			st.setId(key);
-			st.setAv(em.find(Av.class, idAV));
-			st.setProducto(em.find(Producto.class, productoID));
-			em.merge(st);	
+			//busco
+			Stock s= em.find(Stock.class, key);
+			if(s==null){			
+				Stock st = new Stock();
+				st.setCantidad(cantidad);
+				st.setId(key);
+				st.setAv(em.find(Av.class, idAV));
+				st.setProducto(em.find(Producto.class, productoID));
+				em.merge(st);		
+				
+			}else{
+				s.setCantidad(cantidad);
+				/*Notifico caso sea pertinente*/
+				if(s.getNotifica() && s.getMinimo() > s.getCantidad()){		
+					NotificacionesParametro np = new NotificacionesParametro();
+					np.setAv(em.find(Av.class, idAV));
+					np.setProducto(em.find(Producto.class, productoID));
+					String mensaje="Únicamente cuentas con "+s.getCantidad()+" unidades de "+np.getProducto().getNombre()+"!";
+					np.setMensaje(mensaje);
+					em.persist(np);
+					em.flush();
+				}
+			}
 
 		}catch(Exception e){
 			DataResponse dr = new DataResponse();
@@ -326,5 +346,48 @@ public class almacenesController {
 			return Response.status(500).build();
 		}
 		return Response.status(200).build();
+	}
+	
+	@GET
+	@Path("datanotificacion")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getDataNotificacion(){		
+		return Response.status(200).entity(new DataNotificacion()).build();
+	}
+		
+	@POST
+	@Path("{almacenID}/notificaciones/stock")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response agregarNotificacionProducto(
+			@PathParam(value="almacenID")String almacenID,
+			DataNotificacion dn
+			){
+		StockPK sfk= new StockPK();
+		sfk.setIdAv(almacenID);
+		sfk.setIdProducto(dn.getProductoID());
+		Stock s = em.find(Stock.class, sfk);
+		s.setMinimo(dn.getMinimo());
+		s.setNotifica(dn.getNotifica());
+		return Response.status(200).build();
+		
+	}
+	
+	@GET
+	@Path("{almacenID}/notificaciones/stock")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getNotificacionesStock(@PathParam(value="almacenID")String almacenID){
+		Query q = em.createQuery("select S from NotificacionesParametro S where S.av.id=:avid");
+		q.setParameter("avid", almacenID);
+		@SuppressWarnings("unchecked")
+		List<NotificacionesParametro> nots = q.getResultList();
+		List<DataNotificacion> datanots= new ArrayList<DataNotificacion>();
+		for (NotificacionesParametro n : nots){
+			DataNotificacion dn = new DataNotificacion();
+			dn.setProductoID(n.getProducto().getId());
+			dn.setMensaje(n.getMensaje());
+			datanots.add(dn);
+		}
+		return Response.status(200).entity(datanots).build();
+		
 	}
 }

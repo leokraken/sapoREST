@@ -84,7 +84,8 @@ public class usuariosController {
     public List<DataPersona> searchUsuarios(@PathParam(value="name")String name){
     	Query query = em.createQuery("select u from Usuario u where u.id like :id");
     	query.setParameter("id", "%"+name+"%");
-    	List<Usuario> usuarios = query.getResultList();
+    	@SuppressWarnings("unchecked")
+		List<Usuario> usuarios = query.getResultList();
     	List<DataPersona> ret = new ArrayList<DataPersona>();
     	for(Usuario u : usuarios){
     		DataPersona dp = new DataPersona();

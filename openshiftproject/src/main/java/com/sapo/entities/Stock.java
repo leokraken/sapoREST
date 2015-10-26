@@ -4,10 +4,6 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 
-/**
- * The persistent class for the stock database table.
- * 
- */
 @Entity
 @NamedQuery(name="Stock.findAll", query="SELECT s FROM Stock s")
 public class Stock implements Serializable {
@@ -17,7 +13,9 @@ public class Stock implements Serializable {
 	private StockPK id;
 
 	private Integer cantidad;
-
+	private Integer minimo;
+	private Boolean notifica = false;
+	
 	//bi-directional many-to-one association to Av
 	@ManyToOne
 	@MapsId("idAv")
@@ -65,4 +63,20 @@ public class Stock implements Serializable {
 		this.producto = producto;
 	}
 
+	public Integer getMinimo() {
+		return minimo;
+	}
+
+	public void setMinimo(Integer minimo) {
+		this.minimo = minimo;
+	}
+
+	public Boolean getNotifica() {
+		return notifica;
+	}
+
+	public void setNotifica(Boolean notifica) {
+		this.notifica = notifica;
+	}
+	
 }

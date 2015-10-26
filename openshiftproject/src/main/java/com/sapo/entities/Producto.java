@@ -25,6 +25,10 @@ public class Producto implements Serializable {
 
 	private String nombre;
 
+	//bi-directional many-to-one association to NotificacionesParametro
+	@OneToMany(mappedBy="producto")
+	private List<NotificacionesParametro> notificacionesParametros;
+	
 	//bi-directional many-to-one association to Atributo
 	@OneToMany(mappedBy="producto",cascade=CascadeType.REMOVE)
 	private List<Atributo> atributos;
@@ -151,4 +155,12 @@ public class Producto implements Serializable {
 		return stock;
 	}
 
+	public List<NotificacionesParametro> getNotificacionesParametros() {
+		return notificacionesParametros;
+	}
+
+	public void setNotificacionesParametros(List<NotificacionesParametro> notificacionesParametros) {
+		this.notificacionesParametros = notificacionesParametros;
+	}
+	
 }

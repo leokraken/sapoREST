@@ -14,5 +14,6 @@
 		<class>com.sapo.entities.Template</class>
 		<class>com.sapo.entities.Usuario</class>
 		<class>com.sapo.entities.TipoCuenta</class>
+		<class>com.sapo.entities.NotificacionesParametro</class>
 	</persistence-unit>
 </persistence>

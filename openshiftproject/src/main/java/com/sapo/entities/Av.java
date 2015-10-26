@@ -33,6 +33,12 @@ public class Av implements Serializable {
 		)
 	private List<Categoria> categorias;
 
+	
+	//bi-directional many-to-one association to NotificacionesParametro
+	@OneToMany(mappedBy="av")
+	private List<NotificacionesParametro> notificacionesParametros;
+	
+	
 	//bi-directional many-to-one association to Usuario
 	@ManyToOne
 	@JoinColumn(name="id_usuario_duenio")
@@ -156,6 +162,14 @@ public class Av implements Serializable {
 	public void addColaborador(Usuario u){
 		this.getUsuarios().add(u);
 		u.getAvs2().add(this);
+	}
+
+	public List<NotificacionesParametro> getNotificacionesParametros() {
+		return notificacionesParametros;
+	}
+
+	public void setNotificacionesParametros(List<NotificacionesParametro> notificacionesParametros) {
+		this.notificacionesParametros = notificacionesParametros;
 	}
 
 	
