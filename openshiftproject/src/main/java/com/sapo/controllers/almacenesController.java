@@ -91,6 +91,7 @@ public class almacenesController {
 		da.setDescripcion(a.getDescripcion());
 		da.setNombre(a.getNombre());
 		da.setUsuario(a.getUsuario().getId());
+		da.setPrivado(a.getPrivada());
 		
 		List<DataStock> stock = new ArrayList<DataStock>();
 		List<DataCategoria> categorias = new ArrayList<DataCategoria>();
@@ -264,5 +265,66 @@ public class almacenesController {
 		return Response.status(200).build();
 	}
 	
+	@GET
+	@Path("{id}/colaboradores")
+	@Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+	public Response getColaboradores(@PathParam(value="id")String idAV){
+
+		Av a = em.find(Av.class, idAV);
+		List<Usuario> colaboradores = a.getUsuarios();
+		List<DataPersona> ret = new ArrayList<DataPersona>();
+		
+		for(Usuario u : colaboradores){
+			DataPersona dp = new DataPersona();
+			dp.setId(u.getId());
+			dp.setApellido(u.getApellido());
+			dp.setNombre(u.getNombre());			
+			ret.add(dp);
+		}
+		return Response.status(200).entity(ret).build();
+	}	
 	
+	
+	@POST
+	@Path("{id}/agregarcolaboradores")
+	@Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+	public Response setColaboradores(@PathParam(value="id")String idAV, List<String> colaboradores){
+		try{
+			Av a = em.find(Av.class, idAV);
+
+			for(String c : colaboradores){
+				System.out.println(c);
+				Usuario u = em.find(Usuario.class, c);
+				a.addColaborador(u);
+			}
+			
+		}catch(Exception E){
+			E.printStackTrace();
+			DataResponse dt = new DataResponse();
+			dt.setMensaje("Error agregar colaboradores");
+			return Response.status(500).entity(dt).build();
+		}
+		return Response.status(200).build();
+	}	
+
+	@POST
+	@Path("{id}/colaboradores/{idColaborador}")
+	@Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+	public Response addColaborador(@PathParam(value="id")String idAV,@PathParam(value="idColaborador") String colaborador){
+
+		try{
+			Av a = em.find(Av.class, idAV);
+			Usuario u = em.find(Usuario.class, colaborador);
+			a.addColaborador(u);
+			
+		}catch(Exception E){
+			DataResponse dt = new DataResponse();
+			dt.setMensaje("Error agregar colaborador");
+			return Response.status(500).build();
+		}
+		return Response.status(200).build();
+	}
 }

@@ -18,6 +18,8 @@ public class Av implements Serializable {
 
 	private String nombre;
 
+	private Boolean privada=false;
+	
 	//bi-directional many-to-many association to Categoria
 	@ManyToMany
 	@JoinTable(
@@ -143,4 +145,18 @@ public class Av implements Serializable {
 		this.usuarios = usuarios;
 	}
 
+	public Boolean getPrivada() {
+		return privada;
+	}
+
+	public void setPrivada(Boolean privada) {
+		this.privada = privada;
+	}
+	
+	public void addColaborador(Usuario u){
+		this.getUsuarios().add(u);
+		u.getAvs2().add(this);
+	}
+
+	
 }

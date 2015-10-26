@@ -7,6 +7,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -76,7 +77,25 @@ public class usuariosController {
     	}
     	return ret;
     }
-    
+
+	@GET
+	@Path("search/{name}")
+	@Produces(MediaType.APPLICATION_JSON)
+    public List<DataPersona> searchUsuarios(@PathParam(value="name")String name){
+    	Query query = em.createQuery("select u from Usuario u where u.id like :id");
+    	query.setParameter("id", "%"+name+"%");
+    	List<Usuario> usuarios = query.getResultList();
+    	List<DataPersona> ret = new ArrayList<DataPersona>();
+    	for(Usuario u : usuarios){
+    		DataPersona dp = new DataPersona();
+    		dp.setId(u.getId());
+    		dp.setApellido(u.getApellido());
+    		dp.setNombre(u.getNombre());
+    		ret.add(dp);
+    	}
+    	return ret;
+    }
+	
 	@POST
 	@Path("/create")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -130,6 +149,7 @@ public class usuariosController {
     	almacen.setNombre(da.getNombre());
     	almacen.setDescripcion(da.getDescripcion());
     	almacen.setUsuario(em.find(Usuario.class,usuario));
+    	//almacen.setPrivada(da.getPrivado());
     	try{
         	em.persist(almacen);
         	em.flush();	
@@ -156,6 +176,7 @@ public class usuariosController {
 			da.setDescripcion(a.getDescripcion());
 			da.setNombre(a.getNombre());
 			da.setUsuario(u.getId());
+			da.setPrivado(a.getPrivada());
 			ret.add(da);
 		}	
 		return ret;
@@ -171,6 +192,8 @@ public class usuariosController {
 		}
 		return Response.status(200).build();
 	}
+	
+	
 	
 	   
 }

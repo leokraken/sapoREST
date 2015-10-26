@@ -24,6 +24,19 @@ public class Usuario implements Serializable {
 
 	private String token;
 	
+	@ManyToOne
+	@JoinColumn(name="tipo_cuenta")
+	private TipoCuenta tipocuenta;
+	
+	
+	public TipoCuenta getTipocuenta() {
+		return tipocuenta;
+	}
+
+	public void setTipocuenta(TipoCuenta tipocuenta) {
+		this.tipocuenta = tipocuenta;
+	}
+
 	//bi-directional many-to-one association to Av
 	@OneToMany(mappedBy="usuario",cascade=CascadeType.REMOVE)
 	private List<Av> avs1;
@@ -105,5 +118,6 @@ public class Usuario implements Serializable {
 	public void setToken(String token) {
 		this.token = token;
 	}
+	
 	
 }

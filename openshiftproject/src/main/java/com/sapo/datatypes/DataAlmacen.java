@@ -8,6 +8,7 @@ public class DataAlmacen {
 	private String nombre;
 	private String descripcion;
 	private String usuario;
+	private Boolean privado;
 	
 	List<DataPersona> colaboradores;
 	List<DataCategoria> categorias;
@@ -38,7 +39,14 @@ public class DataAlmacen {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
-
+	
+	public Boolean getPrivado() {
+		return privado;
+	}
+	public void setPrivado(Boolean privado) {
+		this.privado = privado;
+	}
+	
 	public List<DataCategoria> getCategorias() {
 		return categorias;
 	}

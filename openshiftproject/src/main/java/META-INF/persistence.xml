@@ -13,5 +13,6 @@
 		<class>com.sapo.entities.StockPK</class>
 		<class>com.sapo.entities.Template</class>
 		<class>com.sapo.entities.Usuario</class>
+		<class>com.sapo.entities.TipoCuenta</class>
 	</persistence-unit>
 </persistence>
