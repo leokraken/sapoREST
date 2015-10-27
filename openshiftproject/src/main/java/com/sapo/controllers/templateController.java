@@ -12,6 +12,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -80,13 +81,13 @@ public class templateController {
 	@POST
 	@Path("create")
 	@Produces(MediaType.APPLICATION_JSON)	
-	public Response createTemplate(DataTemplate datetemplate){
+	public Response createTemplate(DataTemplate datatemplate){
 		Template t = new Template();
-		t.setDescripcion(datetemplate.getDescripcion());
-		t.setNombre(datetemplate.getNombre());
+		t.setDescripcion(datatemplate.getDescripcion());
+		t.setNombre(datatemplate.getNombre());
 		t.setCategorias(new ArrayList<Categoria>());
 
-		for(DataCategoria dc : datetemplate.getCategorias()){
+		for(DataCategoria dc : datatemplate.getCategorias()){
 			System.out.println("Print data id");
 			System.out.println(dc.getID());
 			t.getCategorias().add(em.find(Categoria.class, dc.getID()));
@@ -100,8 +101,39 @@ public class templateController {
 			return Response.status(409).build();
 		}
 		//creado
-		return Response.status(201).entity(t).build();
+		datatemplate.setID(t.getId());
+		return Response.status(201).entity(datatemplate).build();
 	}
+	
+	@PUT
+	@Path("{templateID}")
+	@Consumes(MediaType.APPLICATION_JSON)	
+	@Produces(MediaType.APPLICATION_JSON)	
+	public Response createTemplate(@PathParam(value="templateID") Long templateid, DataTemplate datatemplate){
+		Template t = em.find(Template.class, templateid);
+		t.setDescripcion(datatemplate.getDescripcion());
+		t.setNombre(datatemplate.getNombre());
+		t.setCategorias(new ArrayList<Categoria>());
+		try{
+			
+			for(DataCategoria dc : datatemplate.getCategorias()){
+				t.getCategorias().add(em.find(Categoria.class, dc.getID()));
+			}
+		
+			em.merge(t);
+			em.flush();
+		}catch(Exception e){
+			e.printStackTrace();
+			//conflicto
+			DataResponse dr= new DataResponse();
+			dr.setMensaje("Error: inesperado.");
+			return Response.status(409).build();
+		}
+		//creado
+		datatemplate.setID(t.getId());
+		return Response.status(200).entity(datatemplate).build();
+	}
+
 	
 	@GET
 	@Path("{templateID}")
