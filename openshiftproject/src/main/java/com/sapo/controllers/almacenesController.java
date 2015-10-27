@@ -137,6 +137,35 @@ public class almacenesController {
 		return Response.status(200).entity(da).build();
 	}
 
+	@PUT
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+	public Response updateAlmacen(@PathParam("id") String id, DataAlmacen da){
+		
+		Av a = em.find(Av.class,id);
+		if(a==null){
+			DataResponse dr = new DataResponse();
+			dr.setMensaje("No existe almacen...");
+			return Response.status(400).build();
+		
+		}else{			
+			a.setId(id);
+			a.setDescripcion(da.getDescripcion());
+			a.setNombre(da.getNombre());
+			
+			if(!a.getUsuario().getTipocuenta().getNombre().equals("FREE")){
+				a.setPrivada(da.getPrivado());
+			}else{
+				a.setPrivada(false);
+			}			
+		}			
+		DataResponse dr = new DataResponse();
+		dr.setMensaje("Almacen actualizado con exito!");
+		return Response.status(200).entity(dr).build();
+	}
+
+	
 	@POST
 	@Path("{id}/agregarcategorias")
     @Consumes(MediaType.APPLICATION_JSON)
