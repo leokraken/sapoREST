@@ -1,5 +1,7 @@
 package com.sapo.controllers;
 
+import static com.mongodb.client.model.Filters.eq;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,9 +21,17 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.bson.Document;
+
+import com.mongodb.Block;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoDatabase;
 import com.sapo.datatypes.DataProducto;
 import com.sapo.datatypes.DataResponse;
-import com.sapo.entities.*;
+import com.sapo.entities.Categoria;
+import com.sapo.entities.Producto;
 
 @Stateless
 @LocalBean
@@ -29,6 +39,8 @@ import com.sapo.entities.*;
 @Produces({ "application/xml", "application/json" })
 @Consumes({ "application/xml", "application/json" })
 public class productoController {
+
+	private String MongoURL = "mongodb://tsi2:tsi2@ds043962.mongolab.com:43962/krakenmongo";
 
 	@PersistenceContext(unitName="SAPOLogica")
 	EntityManager em;
@@ -59,6 +71,30 @@ public class productoController {
     	return dp;
     }
 
+	@GET
+	@Path("{id}/detalles")
+	@Produces(MediaType.APPLICATION_JSON)
+    public Response getProductoDetails(@PathParam(value="id")Long id){
+		MongoClient mongoClient = new MongoClient(new MongoClientURI(MongoURL));
+		MongoDatabase db = mongoClient.getDatabase("krakenmongo");
+		FindIterable<Document> iterable= db.getCollection("test").find(eq("rdbms_id",id));
+		iterable.forEach(new Block<Document>() {
+		    @Override
+		    public void apply(final Document document) {
+		        System.out.println(document);
+		    }
+		});
+		
+		Document e = iterable.first();
+		mongoClient.close();
+		if(e==null){
+			DataResponse dr = new DataResponse();
+			dr.setMensaje("No encontrado");
+			return Response.status(404).entity(dr).build();		
+		}
+    	return Response.status(200).entity(e).build();
+    }
+	
 	@GET
 	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
