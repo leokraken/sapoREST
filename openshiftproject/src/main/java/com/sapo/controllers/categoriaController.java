@@ -17,6 +17,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -50,17 +51,17 @@ public class categoriaController {
     @GET
 	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<DataCategoria> getCategorias(){
+	public List<DataCategoria> getCategorias(@QueryParam("generico")Boolean generico){
     	TypedQuery<Categoria> query = em.createNamedQuery("Categoria.findAll",Categoria.class);
     	List<DataCategoria> ret = new ArrayList<DataCategoria>();
     	List<Categoria> categorias = query.getResultList();
     	for(Categoria cat : categorias){
-    		if(cat.getGenerica()){
-            	DataCategoria dc = new DataCategoria();
-            	dc.setID(cat.getId());
-            	dc.setDescripcion(cat.getDescripcion());
-            	dc.setIsgenerico(cat.getGenerica());
-            	dc.setNombre(cat.getNombre());
+        	DataCategoria dc = new DataCategoria();
+        	dc.setID(cat.getId());
+        	dc.setDescripcion(cat.getDescripcion());
+        	dc.setIsgenerico(cat.getGenerica());
+        	dc.setNombre(cat.getNombre());
+    		if(generico==null || generico.equals(cat.getGenerica())){
         		ret.add(dc);    			
     		}
     	}

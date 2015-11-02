@@ -18,6 +18,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -98,19 +99,20 @@ public class productoController {
 	@GET
 	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
-    public List<DataProducto> getProductos(){
+    public List<DataProducto> getProductos(@QueryParam("generico")Boolean generico){
     	TypedQuery<Producto> query = em.createNamedQuery("Producto.findAll",Producto.class);
     	List<Producto>  prods = query.getResultList();
     	List<DataProducto> ret = new ArrayList<DataProducto>();
 		for(Producto p : prods){
-	    	 
 	    	DataProducto dp = new  DataProducto();
 	    	dp.setIsgenerico(p.getGenerico());
 	    	dp.setDescripcion(p.getDescripcion());
 	    	dp.setNombre(p.getNombre());
 	    	dp.setID(p.getId());
 	    	dp.setCategoria(p.getCategoria().getId());
-	    	ret.add(dp);
+			if(generico==null || generico.equals(p.getGenerico())){
+		    	ret.add(dp);
+    		}
 		}
 		return ret;
     }

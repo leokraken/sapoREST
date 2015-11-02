@@ -76,10 +76,20 @@ public class almacenesController {
     	List<Av> avs = query.getResultList();
     	List<DataAlmacen> ret = new ArrayList<>();
     	for(Av a : avs){
+    		List<DataCategoria> categorias = new ArrayList<DataCategoria>();
+    		for(Categoria c : a.getCategorias()){
+    			DataCategoria dc = new DataCategoria();
+    			dc.setID(c.getId());
+    			dc.setDescripcion(c.getDescripcion());
+    			dc.setIsgenerico(c.getGenerica());
+    			dc.setNombre(c.getNombre());
+    			categorias.add(dc);
+    		}
     		DataAlmacen da = new DataAlmacen();
     		da.setId(a.getId());
     		da.setDescripcion(a.getDescripcion());
     		da.setNombre(a.getNombre());
+    		da.setCategorias(categorias);
     		ret.add(da);
     	}
     	return ret;
