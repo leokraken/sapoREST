@@ -1,7 +1,10 @@
 package com.sapo.controllers;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -19,7 +22,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.sapo.datatypes.DataLoginAdmin;
 import com.sapo.datatypes.DataPersona;
+import com.sapo.datatypes.DataResponse;
+import com.sapo.datatypes.Token;
 import com.sapo.entities.Administrador;
 
 /*
@@ -33,6 +39,8 @@ import com.sapo.entities.Administrador;
 @Consumes({ "application/xml", "application/json" })
 public class administradorController {
 
+	public static final long HOUR = 3600*1000;
+	
 	@PersistenceContext(unitName="SAPOLogica")
 	EntityManager em;
 	
@@ -52,6 +60,31 @@ public class administradorController {
     	return dp;
     }
     
+	@POST
+	@Path("login")
+	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+    public Response loginAdministrador(DataLoginAdmin dl){
+    	Administrador admin= em.find(Administrador.class, dl.getUser());
+    	if(dl.getPassword().equals(admin.getPassword())){
+    		String uuid = UUID.randomUUID().toString();
+    		Date d = new Date();
+    		Timestamp ts = new Timestamp(d.getTime()+ 3 * HOUR);
+    		
+    		admin.setToken(uuid);
+    		admin.setExpires(ts);
+    		
+    		Token t = new Token();
+    		t.setToken(uuid);
+        	return Response.status(200).entity(t).build();
+
+    	}else{
+    		DataResponse dr = new DataResponse();
+    		dr.setMensaje("Login invalido");
+        	return Response.status(401).entity(dr).build();
+
+    	}
+    }
+	
 	@GET
 	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)

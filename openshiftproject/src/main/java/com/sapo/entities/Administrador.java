@@ -1,6 +1,7 @@
 package com.sapo.entities;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -8,10 +9,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 
-/**
- * The persistent class for the administradores database table.
- * 
- */
 @Entity
 @Table(name="administradores")
 @NamedQuery(name="Administrador.findAll", query="SELECT a FROM Administrador a")
@@ -26,7 +23,11 @@ public class Administrador implements Serializable {
 	private String nombre;
 	
 	private String token;
+	
+	private String password;
 
+	private Timestamp expires;
+	
 	public Administrador() {
 	}
 
@@ -60,6 +61,22 @@ public class Administrador implements Serializable {
 
 	public void setToken(String token) {
 		this.token = token;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public Timestamp getExpires() {
+		return expires;
+	}
+
+	public void setExpires(Timestamp expires) {
+		this.expires = expires;
 	}
 
 	
