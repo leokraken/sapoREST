@@ -1,19 +1,27 @@
 package com.sapo.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.sapo.datatypes.DataLimiteCuenta;
+import com.sapo.datatypes.DataNotificacion;
 import com.sapo.datatypes.DataResponse;
+import com.sapo.entities.Av;
 import com.sapo.entities.Notificaciones;
 import com.sapo.entities.TipoNotificacion;
 import com.sapo.entities.Usuario;
@@ -48,9 +56,6 @@ public class notificationsController {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response limiteCuenta(DataLimiteCuenta dlc){	
     	try{
-    		System.out.println(dlc.getUsuarioid());
-    		System.out.println(dlc.getMensaje());
-
         	Notificaciones nlc = new Notificaciones();
         	nlc.setMensaje(dlc.getMensaje());
         	nlc.setUsuario(em.find(Usuario.class, dlc.getUsuarioid()));
@@ -66,6 +71,69 @@ public class notificationsController {
     		return Response.status(500).entity(dr).build();
     	}
 
+	}
+    
+    @SuppressWarnings("unchecked")
+	@GET
+	@Path("/limitecuenta/{usuario}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getNotificaciones(@PathParam(value="usuario")String usuario){	
+		Query q= em.createQuery("select S from Notificaciones S "
+				+ "where S.tipoNotificacion.id=:tn"
+				+ " and S.usuario.id=:u"
+				+ " order by S.fecha DESC");
+		
+		q.setParameter("tn", 1);
+		q.setParameter("u", usuario);
+		List<Notificaciones> nots = q.getResultList();
+		
+		List<DataNotificacion> datanots= new ArrayList<DataNotificacion>();
+		for (Notificaciones n : nots){
+			DataNotificacion dn = new DataNotificacion();
+			dn.setId(n.getId());
+			dn.setMensaje(n.getMensaje());
+			dn.setTipo_notificacion(n.getTipoNotificacion().getId());
+			datanots.add(dn);
+		}
+    	return Response.status(200).entity(datanots).build();
+    }
+    
+    
+	
+	@SuppressWarnings("unchecked")
+	@GET
+	@Path("{almacenID}/stock")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getNotificacionesStock(@QueryParam("limit") Integer limit, @PathParam(value="almacenID")String almacenID){
+		//para obtener usuario dueño
+		Av a = em.find(Av.class, almacenID);
+		
+		Query q= em.createQuery("select S from Notificaciones S "
+				+ "where S.tipoNotificacion.id=:tn"
+				+ " and S.usuario.id=:u"
+				+ " order by S.fecha DESC");
+		
+		q.setParameter("tn", 2);
+		q.setParameter("u", a.getUsuario().getId());
+		List<Notificaciones> nots = null;
+
+		if(limit!=null)
+			nots = q.setMaxResults(limit).getResultList();
+		else
+			nots = q.getResultList();
+		
+		
+		List<DataNotificacion> datanots= new ArrayList<DataNotificacion>();
+		for (Notificaciones n : nots){
+			DataNotificacion dn = new DataNotificacion();
+			dn.setId(n.getId());
+			dn.setMensaje(n.getMensaje());
+			dn.setTipo_notificacion(n.getTipoNotificacion().getId());
+			datanots.add(dn);
+		}
+		return Response.status(200).entity(datanots).build();
+		
 	}
     
 }

@@ -2,28 +2,15 @@ package com.sapo.datatypes;
 
 public class DataNotificacion {
 
-	private Long productoID;
-	private int minimo;
-	private Boolean notifica;
+	private Long id;
 	private String mensaje;
+	private Integer tipo_notificacion;
 	
-	public Long getProductoID() {
-		return productoID;
+	public Long getId() {
+		return id;
 	}
-	public void setProductoID(Long productoID) {
-		this.productoID = productoID;
-	}
-	public int getMinimo() {
-		return minimo;
-	}
-	public void setMinimo(int minimo) {
-		this.minimo = minimo;
-	}
-	public Boolean getNotifica() {
-		return notifica;
-	}
-	public void setNotifica(Boolean notifica) {
-		this.notifica = notifica;
+	public void setId(Long id) {
+		this.id = id;
 	}
 	public String getMensaje() {
 		return mensaje;
@@ -31,5 +18,11 @@ public class DataNotificacion {
 	public void setMensaje(String mensaje) {
 		this.mensaje = mensaje;
 	}
-	
+	public Integer getTipo_notificacion() {
+		return tipo_notificacion;
+	}
+	public void setTipo_notificacion(Integer tipo_notificacion) {
+		this.tipo_notificacion = tipo_notificacion;
+	}
+		
 }

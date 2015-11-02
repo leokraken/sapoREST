@@ -1,6 +1,9 @@
 package com.sapo.entities;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.Date;
+
 import javax.persistence.*;
 
 import com.sapo.entities.Usuario;
@@ -26,6 +29,8 @@ public class Notificaciones implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="tipo_notificacion")
 	private TipoNotificacion tipoNotificacion;
+	
+	private Timestamp fecha = new Timestamp(new Date().getTime()); 
 	
 	public Notificaciones() {
 	}
@@ -60,6 +65,14 @@ public class Notificaciones implements Serializable {
 
 	public void setTipoNotificacione(TipoNotificacion tipoNotificacion) {
 		this.tipoNotificacion = tipoNotificacion;
+	}
+
+	public Timestamp getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(Timestamp fecha) {
+		this.fecha = fecha;
 	}
 
 }
