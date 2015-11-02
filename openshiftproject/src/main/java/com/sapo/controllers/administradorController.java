@@ -61,28 +61,38 @@ public class administradorController {
     }
     
 	@POST
-	@Path("login")
-	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+	@Path("/login")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
     public Response loginAdministrador(DataLoginAdmin dl){
     	Administrador admin= em.find(Administrador.class, dl.getUser());
-    	if(dl.getPassword().equals(admin.getPassword())){
-    		String uuid = UUID.randomUUID().toString();
-    		Date d = new Date();
-    		Timestamp ts = new Timestamp(d.getTime()+ 3 * HOUR);
-    		
-    		admin.setToken(uuid);
-    		admin.setExpires(ts);
-    		
-    		Token t = new Token();
-    		t.setToken(uuid);
-        	return Response.status(200).entity(t).build();
+    	try{
+        	if(dl.getPassword().equals(admin.getPassword())){
+        		String uuid = UUID.randomUUID().toString();
+        		Date d = new Date();
+        		Timestamp ts = new Timestamp(d.getTime()+ 3 * HOUR);
+        		
+        		admin.setToken(uuid);
+        		admin.setExpires(ts);
+        		
+        		Token t = new Token();
+        		t.setToken(uuid);
+            	return Response.status(200).entity(t).build();
 
-    	}else{
+        	}else{
+        		DataResponse dr = new DataResponse();
+        		dr.setMensaje("Login invalido");
+            	return Response.status(401).entity(dr).build();
+
+        	}    		
+    	}catch(Exception e){
+    		
     		DataResponse dr = new DataResponse();
-    		dr.setMensaje("Login invalido");
+    		dr.setMensaje("Excepcion");
+    		dr.setDescripcion(e.getMessage());
         	return Response.status(401).entity(dr).build();
-
     	}
+
     }
 	
 	@GET

@@ -4,11 +4,6 @@ import java.io.Serializable;
 import javax.persistence.*;
 import java.util.List;
 
-
-/**
- * The persistent class for the usuarios database table.
- * 
- */
 @Entity
 @Table(name="usuarios")
 @NamedQuery(name="Usuario.findAll", query="SELECT u FROM Usuario u")
@@ -27,6 +22,11 @@ public class Usuario implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="tipo_cuenta")
 	private TipoCuenta tipocuenta;
+	
+	//bi-directional many-to-one association to NotificacionesLimiteCuenta
+	@OneToMany(mappedBy="usuario")
+	private List<Notificaciones> notificacionesLimiteCuentas;
+
 	
 	
 	public TipoCuenta getTipocuenta() {
@@ -119,5 +119,26 @@ public class Usuario implements Serializable {
 		this.token = token;
 	}
 	
+	public List<Notificaciones> getNotificacionesLimiteCuentas() {
+		return this.notificacionesLimiteCuentas;
+	}
+
+	public void setNotificacionesLimiteCuentas(List<Notificaciones> notificacionesLimiteCuentas) {
+		this.notificacionesLimiteCuentas = notificacionesLimiteCuentas;
+	}
+
+	public Notificaciones addNotificacionesLimiteCuenta(Notificaciones notificacionesLimiteCuenta) {
+		getNotificacionesLimiteCuentas().add(notificacionesLimiteCuenta);
+		notificacionesLimiteCuenta.setUsuario(this);
+
+		return notificacionesLimiteCuenta;
+	}
+
+	public Notificaciones removeNotificacionesLimiteCuenta(Notificaciones notificacionesLimiteCuenta) {
+		getNotificacionesLimiteCuentas().remove(notificacionesLimiteCuenta);
+		notificacionesLimiteCuenta.setUsuario(null);
+
+		return notificacionesLimiteCuenta;
+	}
 	
 }
