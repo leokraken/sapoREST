@@ -1,35 +1,29 @@
 package com.sapo.datatypes.reportes;
 
+import java.util.List;
+
 public class DataReporteAlmacen {
-	private String almacen;
-	private Long visitas;
-	private Integer productos;
-	private Integer stock;
-	public String getAlmacen() {
-		return almacen;
+	private List<String> labels;
+	private List<String> series;
+	private List<List<Long>> data;
+	
+	public List<String> getLabels() {
+		return labels;
 	}
-	public void setAlmacen(String almacen) {
-		this.almacen = almacen;
+	public void setLabels(List<String> labels) {
+		this.labels = labels;
 	}
-	public Long getVisitas() {
-		return visitas;
+	public List<String> getSeries() {
+		return series;
 	}
-	public void setVisitas(Long visitas) {
-		this.visitas = visitas;
+	public void setSeries(List<String> series) {
+		this.series = series;
 	}
-	public Integer getProductos() {
-		return productos;
+	public List<List<Long>> getData() {
+		return data;
 	}
-	public void setProductos(Integer productos) {
-		this.productos = productos;
-	}
-	public Integer getStock() {
-		return stock;
-	}
-	public void setStock(Integer stock) {
-		this.stock = stock;
+	public void setData(List<List<Long>> data) {
+		this.data = data;
 	}
 	
-
-
 }

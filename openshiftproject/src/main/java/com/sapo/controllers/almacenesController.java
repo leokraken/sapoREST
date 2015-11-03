@@ -35,6 +35,7 @@ import com.sapo.entities.Av;
 import com.sapo.entities.Categoria;
 import com.sapo.entities.Notificaciones;
 import com.sapo.entities.Producto;
+import com.sapo.entities.ReportesMovimientoStock;
 import com.sapo.entities.Stock;
 import com.sapo.entities.StockPK;
 import com.sapo.entities.TipoNotificacion;
@@ -201,10 +202,12 @@ public class almacenesController {
 	@POST
 	@Path("{id}/agregarproductos")
     @Consumes(MediaType.APPLICATION_JSON)
-	public Response agregarProductosAlmacen(@PathParam("id") String id, List<DataStock> productos){
+	public Response agregarProductosAlmacen(@PathParam("id") String id, List<DataStockLite> productos){
 		Av a = em.find(Av.class,id);			
-		for(DataStock prod : productos){
-			System.out.println(prod);
+		for(DataStockLite prod : productos){
+			System.out.println(prod.getProductoID());
+			System.out.println(prod.getCantidad());
+
 			Stock stock = new Stock();
 			stock.setCantidad(prod.getCantidad());
 			stock.setAv(a);
@@ -214,8 +217,23 @@ public class almacenesController {
 			stockid.setIdAv(id);
 			stockid.setIdProducto(prod.getProductoID());
 			stock.setId(stockid);
-			em.persist(stock);
-			em.flush();
+			
+			//movimiento stock
+			ReportesMovimientoStock rm = new ReportesMovimientoStock();
+			rm.setAlmacenid(id);
+			rm.setProductoid(prod.getProductoID());
+			rm.setStock(prod.getCantidad());
+			
+			try{
+				em.merge(stock);
+				em.flush();		
+				
+				//movimientos stock
+				em.persist(rm);
+				em.flush();
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 		}
 
 		return Response.status(200).build();
@@ -306,12 +324,12 @@ public class almacenesController {
 			//busco
 			Stock s= em.find(Stock.class, key);
 			if(s==null){			
-				Stock st = new Stock();
-				st.setCantidad(cantidad);
-				st.setId(key);
-				st.setAv(em.find(Av.class, idAV));
-				st.setProducto(em.find(Producto.class, productoID));
-				em.merge(st);		
+				s = new Stock();
+				s.setCantidad(cantidad);
+				s.setId(key);
+				s.setAv(em.find(Av.class, idAV));
+				s.setProducto(em.find(Producto.class, productoID));
+				em.merge(s);		
 				
 			}else{
 				s.setCantidad(cantidad);
@@ -330,8 +348,15 @@ public class almacenesController {
 					
 					//TODO make send message
 				}
-
 			}
+			
+			//Movimiento de stock
+			ReportesMovimientoStock rm = new ReportesMovimientoStock();
+			rm.setAlmacenid(idAV);
+			rm.setProductoid(productoID);
+			rm.setStock(cantidad);
+			em.persist(rm);
+			em.flush();
 
 		}catch(Exception e){
 			e.printStackTrace();
