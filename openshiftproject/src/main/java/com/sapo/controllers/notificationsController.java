@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -59,7 +60,7 @@ public class notificationsController {
         	Notificaciones nlc = new Notificaciones();
         	nlc.setMensaje(dlc.getMensaje());
         	nlc.setUsuario(em.find(Usuario.class, dlc.getUsuarioid()));
-        	nlc.setTipoNotificacione(em.find(TipoNotificacion.class, dlc.getTipo_notificacion()));
+        	nlc.setTipoNotificacione(em.find(TipoNotificacion.class, 1));
         	em.persist(nlc);
         	em.flush();
         	return Response.status(200).build();    		
@@ -135,5 +136,16 @@ public class notificationsController {
 		return Response.status(200).entity(datanots).build();
 		
 	}
-    
+	
+	@DELETE
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteNotificacion(@PathParam(value="id")Long notid){
+		
+		em.remove(em.find(Notificaciones.class, notid));
+		em.flush();	
+		return Response.status(200).build();
+	}
+	
+   
 }

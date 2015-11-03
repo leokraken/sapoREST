@@ -5,6 +5,7 @@ public class DataCuenta {
 	private String nombre;
 	private String descripcion;
 	private double precio;
+	private int tiempo;
 	
 	public int getCuentaID() {
 		return cuentaID;
@@ -30,6 +31,11 @@ public class DataCuenta {
 	public void setPrecio(double precio) {
 		this.precio = precio;
 	}
-	
-	
+	public int getTiempo() {
+		return tiempo;
+	}
+	public void setTiempo(int tiempo) {
+		this.tiempo = tiempo;
+	}
+		
 }

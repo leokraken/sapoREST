@@ -1,12 +1,15 @@
 package com.sapo.controllers;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -15,10 +18,12 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.sapo.datatypes.DataCuenta;
+import com.sapo.datatypes.DataNotificacionCuentas;
 import com.sapo.datatypes.DataResponse;
 import com.sapo.entities.TipoCuenta;
 import com.sapo.entities.Usuario;
@@ -30,6 +35,7 @@ import com.sapo.entities.Usuario;
 @Consumes({ "application/xml", "application/json" })
 public class cuentasController {
 
+	public static final long DAYS = 3600*1000*24;
 	@PersistenceContext(unitName="SAPOLogica")
 	private EntityManager em;
 	
@@ -58,6 +64,7 @@ public class cuentasController {
     		dc.setDescripcion(c.getDescripcion());
     		dc.setNombre(c.getNombre());
     		dc.setPrecio(c.getPrecio());
+    		dc.setTiempo(c.getTiempo());
     		ret.add(dc);
     	}
     	return Response.status(200).entity(ret).build();	
@@ -74,6 +81,7 @@ public class cuentasController {
     		tc.setDescripcion(dc.getDescripcion());
     		tc.setNombre(dc.getNombre());
     		tc.setPrecio(dc.getPrecio());   
+    		tc.setTiempo(dc.getTiempo());
     		em.persist(tc);
     		em.flush();
     		//return
@@ -99,6 +107,7 @@ public class cuentasController {
     		tc.setDescripcion(dc.getDescripcion());
     		tc.setNombre(dc.getNombre());
     		tc.setPrecio(dc.getPrecio());   
+    		tc.setTiempo(dc.getTiempo());
     		em.merge(tc);
     		em.flush();
     		//return
@@ -119,9 +128,44 @@ public class cuentasController {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateCuentaUsuario(@PathParam(value="usuarioID") String userID, @PathParam(value="cuentaID") int cuentaID){     
     	Usuario u = em.find(Usuario.class, userID);
-    	u.setTipocuenta(em.find(TipoCuenta.class, cuentaID));
+    	TipoCuenta tipocuenta = em.find(TipoCuenta.class, cuentaID);
+    	u.setTipocuenta(tipocuenta);
+    	u.setExpires(new Timestamp(new Date().getTime()+(DAYS*tipocuenta.getTiempo())));
     	em.merge(u);
     	return Response.status(200).build();
     }
+    
+	@GET
+	@Path("/time")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response gettime(){
+		return Response.status(200).entity(new Date()).build();
+	}
+    
+	@SuppressWarnings("unchecked")
+	@GET
+	@Path("/vencimiento")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getCuentasValidez(@QueryParam("fecha")Long fecha){
+		Query q= null;
+		if(fecha!=null){
+			q=em.createQuery("select u from Usuario u where u.expires<:fecha");		
+			q.setParameter("fecha", new Timestamp(fecha));
+		}else{
+			q=em.createQuery("select u from Usuario u");		
+		}
+		List<Usuario> users = q.getResultList();
+		List<DataNotificacionCuentas> nots = new ArrayList<>();
+		for(Usuario u : users){
+			DataNotificacionCuentas n = new DataNotificacionCuentas();
+			n.setExpira(u.getExpires());
+			n.setUsuario(u.getId());
+			n.setTipo_cuenta(u.getTipocuenta().getId());
+			n.setAlias_cuenta(u.getTipocuenta().getNombre());
+			nots.add(n);
+		}
+		return Response.status(200).entity(nots).build();
+	}
+    
     
 }

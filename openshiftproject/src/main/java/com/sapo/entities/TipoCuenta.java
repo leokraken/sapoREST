@@ -21,6 +21,8 @@ public class TipoCuenta implements Serializable {
 	private String nombre;
 	
 	private double precio;
+	
+	private int tiempo;
 
 	@OneToMany(mappedBy="tipocuenta", cascade=CascadeType.REMOVE)
 	List<Usuario> usuarios;
@@ -72,7 +74,13 @@ public class TipoCuenta implements Serializable {
 	public void setPrecio(double precio) {
 		this.precio = precio;
 	}
-	
-	
+
+	public int getTiempo() {
+		return tiempo;
+	}
+
+	public void setTiempo(int tiempo) {
+		this.tiempo = tiempo;
+	}	
 	
 }

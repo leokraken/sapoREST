@@ -1,6 +1,8 @@
 package com.sapo.entities;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -18,6 +20,8 @@ public class Usuario implements Serializable {
 	private String nombre;
 
 	private String token;
+	
+	private Timestamp expires;
 	
 	@ManyToOne
 	@JoinColumn(name="tipo_cuenta")
@@ -140,5 +144,15 @@ public class Usuario implements Serializable {
 
 		return notificacionesLimiteCuenta;
 	}
+
+	public Timestamp getExpires() {
+		return expires;
+	}
+
+	public void setExpires(Timestamp expires) {
+		this.expires = expires;
+	}
+	
+	
 	
 }
