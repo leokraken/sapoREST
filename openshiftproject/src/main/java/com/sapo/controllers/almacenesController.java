@@ -102,9 +102,14 @@ public class almacenesController {
 	public Response getAlmacen(@PathParam("id") String id){
 		
 		Av a = em.find(Av.class,id);
+		
+		
 		if(a==null)
 			return Response.status(204).build();
 		
+		//actualizo visitas
+		a.setVisitas(a.getVisitas()+1);
+	
 		DataAlmacen da = new DataAlmacen();
 		da.setId(id);
 		da.setDescripcion(a.getDescripcion());

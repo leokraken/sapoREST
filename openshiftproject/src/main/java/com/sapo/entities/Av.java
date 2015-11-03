@@ -20,6 +20,8 @@ public class Av implements Serializable {
 
 	private Boolean privada=false;
 	
+	private Long visitas = (long) 0;
+	
 	//bi-directional many-to-many association to Categoria
 	@ManyToMany
 	@JoinTable(
@@ -157,6 +159,14 @@ public class Av implements Serializable {
 	public void addColaborador(Usuario u){
 		this.getUsuarios().add(u);
 		u.getAvs2().add(this);
+	}
+
+	public Long getVisitas() {
+		return visitas;
+	}
+
+	public void setVisitas(Long visitas) {
+		this.visitas = visitas;
 	}
 
 	
