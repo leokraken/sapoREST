@@ -8,7 +8,8 @@
 	"body-parser": "^1.8.1",
 	"unirest": "*",
 	"mongodb":"*",
-	"ws":"*"
+	"ws":"*",
+	"wordnet-magic":"0.3.0"
     },
 
     "scripts": {

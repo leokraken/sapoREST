@@ -5,6 +5,8 @@ var assert = require('assert');
 var unirest = require('unirest');
 var WebSocket = require('ws');
 
+var wordNet = require('wordnet-magic');
+
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
@@ -191,12 +193,53 @@ var Request = unirest.get('http://'+SAPO_HOST+':8080/openshiftproject/rest/almac
 });
 
 
-app.get('/algoritmos/categorias', function(req,res){
+app.get('/algoritmos/wordnet/:n', function(req,res){
+
+var wn = wordNet("/home/leonardo/Downloads/sqlite-31.db", false);
+//var word = new wn.Word("cat");
+wn.fetchSynset(req.params.n+".n.1").then(function(synset){
+    console.log(synset)
+    synset.getDomains().then(function(domain){
+	//console.log('######');
+	//console.log(domain);
+        ///console.log(util.inspect(domain, null, 3))
+    });
+});
 
 
-}
+wn.fetchSynset(req.params.n+".n.1").then(function(synset){
+    synset.getHypernyms().then(function(hypernym){
+	console.log('####hiperonimo')
+        console.log(hypernym);
+	for(i=0;i<hypernym.length;i++){
+	   console.log(hypernym[i].words);
+	}
+    });
+});
 
-);
+var kiss = new wn.Word("kiss","n");
+kiss.getSynsets(function(err, data){
+    console.log("sinónimos");
+    console.log(data);
+});
+
+
+res.send("");
+/*
+var Request = unirest.get('http://'+SAPO_HOST+':8080/openshiftproject/rest/categorias?genericas=false')
+		.type('json')
+		.end(function (response) {
+	var categorias = response.body;
+	for(i=0; i<categorias.length;i++){
+		
+	}
+
+});
+
+*/
+});
+
+
 
 
 
