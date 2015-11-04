@@ -315,6 +315,7 @@ public class almacenesController {
     @Consumes(MediaType.APPLICATION_JSON)
 	public Response setStockAlmacen(@PathParam(value="id")String idAV, @PathParam(value="productoID") Long productoID, @PathParam(value="cantidad")int cantidad){
 
+		int stockold=cantidad;
 		//si no existe lo creo
 		try{
 			StockPK key = new StockPK();
@@ -323,7 +324,7 @@ public class almacenesController {
 
 			//busco
 			Stock s= em.find(Stock.class, key);
-			if(s==null){			
+			if(s==null){		
 				s = new Stock();
 				s.setCantidad(cantidad);
 				s.setId(key);
@@ -332,6 +333,7 @@ public class almacenesController {
 				em.merge(s);		
 				
 			}else{
+				stockold = cantidad-s.getCantidad();
 				s.setCantidad(cantidad);
 				String mensaje= null;
 				/*Notifico caso sea pertinente*/
@@ -355,6 +357,7 @@ public class almacenesController {
 			rm.setAlmacenid(idAV);
 			rm.setProductoid(productoID);
 			rm.setStock(cantidad);
+			rm.setDif(stockold);
 			em.persist(rm);
 			em.flush();
 

@@ -23,6 +23,8 @@ public class ReportesMovimientoStock implements Serializable {
 
 	private Integer stock;
 
+	private Integer dif;
+	
 	public ReportesMovimientoStock() {
 	}
 
@@ -64,6 +66,14 @@ public class ReportesMovimientoStock implements Serializable {
 
 	public void setStock(Integer stock) {
 		this.stock = stock;
+	}
+
+	public Integer getDif() {
+		return dif;
+	}
+
+	public void setDif(Integer dif) {
+		this.dif = dif;
 	}
 
 }
