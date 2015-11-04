@@ -241,6 +241,46 @@ var Request = unirest.get('http://'+SAPO_HOST+':8080/openshiftproject/rest/categ
 
 
 
+app.get('/algoritmos/categorias', function(req,res){
+	var Request = unirest.get('http://'+SAPO_HOST+':8080/openshiftproject/rest/algoritmos/categorias')
+		.type('json')
+		.end(function (response) {
+
+			var natural = require('natural');
+			var classifier = new natural.BayesClassifier();
+
+
+			var cats = response.body;
+			for( i=0; i< cats.length; i++ ){
+			  console.log(cats[i].categoriaid);
+			  var prods = cats[i].productos;
+			  for( j=0; j<prods.length; j++){
+			    console.log(prods[j].descripcion);
+			    if(prods[j].descripcion!=null)
+			    	classifier.addDocument(prods[j].descripcion, cats[i].categoriaid);
+			    if(prods[j].nombre!=null)
+			    	classifier.addDocument(prods[j].nombre, cats[i].categoriaid);
+			  }
+			}
+			classifier.train();
+			console.log(classifier.getClassifications('Sebastián'));
+		});
+
+
+
+/*
+	classifier.addDocument('my unit-tests failed.', 'software');
+	classifier.addDocument('tried the program, but it was buggy.', 'software');
+	classifier.addDocument('the drive has a 2TB capacity.', 'hardware');
+	classifier.addDocument('i need a new power supply.', 'hardware');
+
+	classifier.train();
+
+	console.log(classifier.classify('did the tests pass?'));
+	console.log(classifier.classify('did you buy a new drive?'));*/
+}
+);
+
 
 
 //listener

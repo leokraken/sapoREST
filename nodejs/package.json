@@ -9,7 +9,8 @@
 	"unirest": "*",
 	"mongodb":"*",
 	"ws":"*",
-	"wordnet-magic":"0.3.0"
+	"wordnet-magic":"0.3.0",
+	"natural":"0.2.1"
     },
 
     "scripts": {
