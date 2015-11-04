@@ -2,9 +2,15 @@ package com.sapo.entities;
 
 import java.io.Serializable;
 import javax.persistence.*;
-import java.sql.Timestamp;
-import java.util.Date;
 
+
+import java.sql.Timestamp;
+
+
+/**
+ * The persistent class for the reportes_movimiento_stock database table.
+ * 
+ */
 @Entity
 @Table(name="reportes_movimiento_stock")
 @NamedQuery(name="ReportesMovimientoStock.findAll", query="SELECT r FROM ReportesMovimientoStock r")
@@ -12,19 +18,24 @@ public class ReportesMovimientoStock implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
-	private String almacenid;
+	private Integer dif;
 
-	private Timestamp fecha= new Timestamp(new Date().getTime());
-
-	private Long productoid;
+	private Timestamp fecha;
 
 	private Integer stock;
 
-	private Integer dif;
-	
+	//bi-directional many-to-one association to Av
+	@ManyToOne
+	@JoinColumn(name="almacenid")
+	private Av av;
+
+	//bi-directional many-to-one association to Producto
+	@ManyToOne
+	@JoinColumn(name="productoid")
+	private Producto producto;
+
 	public ReportesMovimientoStock() {
 	}
 
@@ -36,12 +47,12 @@ public class ReportesMovimientoStock implements Serializable {
 		this.id = id;
 	}
 
-	public String getAlmacenid() {
-		return this.almacenid;
+	public Integer getDif() {
+		return this.dif;
 	}
 
-	public void setAlmacenid(String almacenid) {
-		this.almacenid = almacenid;
+	public void setDif(Integer dif) {
+		this.dif = dif;
 	}
 
 	public Timestamp getFecha() {
@@ -52,14 +63,6 @@ public class ReportesMovimientoStock implements Serializable {
 		this.fecha = fecha;
 	}
 
-	public Long getProductoid() {
-		return this.productoid;
-	}
-
-	public void setProductoid(Long productoid) {
-		this.productoid = productoid;
-	}
-
 	public Integer getStock() {
 		return this.stock;
 	}
@@ -68,12 +71,20 @@ public class ReportesMovimientoStock implements Serializable {
 		this.stock = stock;
 	}
 
-	public Integer getDif() {
-		return dif;
+	public Av getAv() {
+		return this.av;
 	}
 
-	public void setDif(Integer dif) {
-		this.dif = dif;
+	public void setAv(Av av) {
+		this.av = av;
+	}
+
+	public Producto getProducto() {
+		return this.producto;
+	}
+
+	public void setProducto(Producto producto) {
+		this.producto = producto;
 	}
 
 }

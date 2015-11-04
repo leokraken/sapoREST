@@ -22,15 +22,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.sapo.datatypes.DataAdministrador;
 import com.sapo.datatypes.DataLoginAdmin;
-import com.sapo.datatypes.DataPersona;
 import com.sapo.datatypes.DataResponse;
 import com.sapo.datatypes.Token;
 import com.sapo.entities.Administrador;
-
-/*
- * Solo administradores auth
- * */
 
 @Stateless
 @LocalBean
@@ -49,14 +45,21 @@ public class administradorController {
     }
 
 	@GET
+	@Path("dataadmin")
+	@Produces(MediaType.APPLICATION_JSON)
+    public DataAdministrador getDataAdministrador(){
+		return new DataAdministrador();
+	}
+    
+	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-    public DataPersona getAdministrador(@PathParam(value="id")String id){
+    public DataAdministrador getAdministrador(@PathParam(value="id")String id){
     	Administrador admin= em.find(Administrador.class, id);
-    	DataPersona dp = new DataPersona();
-		dp.setApellido(admin.getApellido());
-    	dp.setNombre(admin.getNombre());
-    	dp.setId(admin.getId());
+    	DataAdministrador dp = new DataAdministrador();
+		dp.setSurname(admin.getApellido());
+    	dp.setName(admin.getNombre());
+    	dp.setUsername(admin.getId());
     	return dp;
     }
     
@@ -98,42 +101,39 @@ public class administradorController {
 	@GET
 	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
-    public List<DataPersona> getAdministradores(){
+    public Response getAdministradores(){
     	TypedQuery<Administrador> query = em.createNamedQuery("Administrador.findAll",Administrador.class);
-    	List<DataPersona> ret = new ArrayList<DataPersona>();
+    	List<DataAdministrador> ret = new ArrayList<DataAdministrador>();
     	List<Administrador> admins = query.getResultList();
     	for(Administrador a : admins){
-        	DataPersona dp = new DataPersona();
-    		dp.setApellido(a.getApellido());
-        	dp.setNombre(a.getNombre());
-        	dp.setId(a.getId());
+        	DataAdministrador dp = new DataAdministrador();
+    		dp.setSurname(a.getApellido());
+        	dp.setName(a.getNombre());
+        	dp.setUsername(a.getId());
     		ret.add(dp);
     	}
-    	return ret;
+    	return Response.status(200).entity(ret).build();
     }
     
 	@POST
 	@Path("/create")
 	@Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addAdministrador(DataPersona dp){
+    public Response addAdministrador(DataAdministrador dp){
 		try{
-			Administrador login = em.find(Administrador.class, dp.getId());
+			Administrador login = em.find(Administrador.class, dp.getUsername());
 			if(login==null){ 
 				//creo usuario
 				Administrador u = new Administrador();
-				u.setApellido(dp.getApellido());
-				u.setId(dp.getId());
-				u.setNombre(dp.getNombre());
-				u.setToken(dp.getToken());
+				u.setApellido(dp.getSurname());
+				u.setId(dp.getUsername());
+				u.setNombre(dp.getName());
+				u.setPassword(dp.getPassword());
 	        	em.persist(u); 
 	        	em.flush();	
-	        	return Response.status(201).build(); //created					
-			}else{
-				login.setToken(dp.getToken());
-				return Response.status(200).build();
+	        	 //created					
 			}
-			
+			return Response.status(201).build();
 		}catch(Exception e){
 			e.printStackTrace();
 			return Response.status(500).entity("Administrador ya existe").build();
@@ -144,14 +144,13 @@ public class administradorController {
 	@PUT
 	@Path("{id}")
 	@Produces({MediaType.APPLICATION_JSON,MediaType.TEXT_PLAIN})
-    public Response updateAdministrador(@PathParam(value="id")String id,DataPersona dataadmin){
+    public Response updateAdministrador(@PathParam(value="id")String id,DataAdministrador dataadmin){
 		Administrador admin = new Administrador();
-    	admin.setApellido(dataadmin.getApellido());
-    	admin.setNombre(dataadmin.getNombre());
-    	admin.setId(dataadmin.getId());
-    	
+    	admin.setApellido(dataadmin.getSurname());
+    	admin.setNombre(dataadmin.getName());
+    	admin.setId(dataadmin.getUsername());	
 		em.merge(admin);
-		return Response.ok().build();
+		return Response.status(200).build();
     }
 
 	@DELETE

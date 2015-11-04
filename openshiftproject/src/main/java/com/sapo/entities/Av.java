@@ -53,6 +53,11 @@ public class Av implements Serializable {
 	@ManyToMany(mappedBy="avs2", cascade=CascadeType.REMOVE)
 	private List<Usuario> usuarios;
 
+	
+	//bi-directional many-to-one association to ReportesMovimientoStock
+	@OneToMany(mappedBy="av")
+	private List<ReportesMovimientoStock> reportesMovimientoStocks;
+	
 	public Av() {
 	}
 
@@ -169,5 +174,25 @@ public class Av implements Serializable {
 		this.visitas = visitas;
 	}
 
-	
+	public List<ReportesMovimientoStock> getReportesMovimientoStocks() {
+		return this.reportesMovimientoStocks;
+	}
+
+	public void setReportesMovimientoStocks(List<ReportesMovimientoStock> reportesMovimientoStocks) {
+		this.reportesMovimientoStocks = reportesMovimientoStocks;
+	}
+
+	public ReportesMovimientoStock addReportesMovimientoStock(ReportesMovimientoStock reportesMovimientoStock) {
+		getReportesMovimientoStocks().add(reportesMovimientoStock);
+		reportesMovimientoStock.setAv(this);
+
+		return reportesMovimientoStock;
+	}
+
+	public ReportesMovimientoStock removeReportesMovimientoStock(ReportesMovimientoStock reportesMovimientoStock) {
+		getReportesMovimientoStocks().remove(reportesMovimientoStock);
+		reportesMovimientoStock.setAv(null);
+
+		return reportesMovimientoStock;
+	}
 }

@@ -17,7 +17,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
 import com.sapo.entities.Av;
-import com.sapo.interfaces.IstockController;
 import com.sapo.websockets.StockWSClient;
 
 
@@ -26,7 +25,7 @@ import com.sapo.websockets.StockWSClient;
 @Path("/stock")
 @Produces({ "application/xml", "application/json" })
 @Consumes({ "application/xml", "application/json" })
-public class stockController implements IstockController {
+public class stockController {
 	
 	@PersistenceContext(unitName="SAPOLogica")
 	private EntityManager em;

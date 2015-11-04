@@ -35,7 +35,6 @@ import com.sapo.entities.Av;
 import com.sapo.entities.Categoria;
 import com.sapo.entities.Notificaciones;
 import com.sapo.entities.Producto;
-import com.sapo.entities.ReportesMovimientoStock;
 import com.sapo.entities.Stock;
 import com.sapo.entities.StockPK;
 import com.sapo.entities.TipoNotificacion;
@@ -218,19 +217,9 @@ public class almacenesController {
 			stockid.setIdProducto(prod.getProductoID());
 			stock.setId(stockid);
 			
-			//movimiento stock
-			ReportesMovimientoStock rm = new ReportesMovimientoStock();
-			rm.setAlmacenid(id);
-			rm.setProductoid(prod.getProductoID());
-			rm.setStock(prod.getCantidad());
-			
 			try{
 				em.merge(stock);
 				em.flush();		
-				
-				//movimientos stock
-				em.persist(rm);
-				em.flush();
 			}catch(Exception e){
 				e.printStackTrace();
 			}
@@ -315,7 +304,6 @@ public class almacenesController {
     @Consumes(MediaType.APPLICATION_JSON)
 	public Response setStockAlmacen(@PathParam(value="id")String idAV, @PathParam(value="productoID") Long productoID, @PathParam(value="cantidad")int cantidad){
 
-		int stockold=cantidad;
 		//si no existe lo creo
 		try{
 			StockPK key = new StockPK();
@@ -333,7 +321,6 @@ public class almacenesController {
 				em.merge(s);		
 				
 			}else{
-				stockold = cantidad-s.getCantidad();
 				s.setCantidad(cantidad);
 				String mensaje= null;
 				/*Notifico caso sea pertinente*/
@@ -351,16 +338,6 @@ public class almacenesController {
 					//TODO make send message
 				}
 			}
-			
-			//Movimiento de stock
-			ReportesMovimientoStock rm = new ReportesMovimientoStock();
-			rm.setAlmacenid(idAV);
-			rm.setProductoid(productoID);
-			rm.setStock(cantidad);
-			rm.setDif(stockold);
-			em.persist(rm);
-			em.flush();
-
 		}catch(Exception e){
 			e.printStackTrace();
 			DataResponse dr = new DataResponse();

@@ -25,6 +25,10 @@ public class Producto implements Serializable {
 
 	private String nombre;
 
+	//bi-directional many-to-one association to ReportesMovimientoStock
+	@OneToMany(mappedBy="producto")
+	private List<ReportesMovimientoStock> reportesMovimientoStocks;
+	
 	//bi-directional many-to-one association to Atributo
 	@OneToMany(mappedBy="producto",cascade=CascadeType.REMOVE)
 	private List<Atributo> atributos;
@@ -150,6 +154,27 @@ public class Producto implements Serializable {
 
 		return stock;
 	}
+	
+	public List<ReportesMovimientoStock> getReportesMovimientoStocks() {
+		return this.reportesMovimientoStocks;
+	}
 
+	public void setReportesMovimientoStocks(List<ReportesMovimientoStock> reportesMovimientoStocks) {
+		this.reportesMovimientoStocks = reportesMovimientoStocks;
+	}
+
+	public ReportesMovimientoStock addReportesMovimientoStock(ReportesMovimientoStock reportesMovimientoStock) {
+		getReportesMovimientoStocks().add(reportesMovimientoStock);
+		reportesMovimientoStock.setProducto(this);
+
+		return reportesMovimientoStock;
+	}
+
+	public ReportesMovimientoStock removeReportesMovimientoStock(ReportesMovimientoStock reportesMovimientoStock) {
+		getReportesMovimientoStocks().remove(reportesMovimientoStock);
+		reportesMovimientoStock.setProducto(null);
+
+		return reportesMovimientoStock;
+	}
 	
 }

@@ -1,12 +1,7 @@
 package com.sapo.websockets;
-import java.net.URISyntaxException;
-
-import javax.ejb.EJB;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
-
-import com.sapo.interfaces.IstockController;
 
 @WebListener
 public class onStartup implements ServletContextListener {

@@ -26,18 +26,29 @@
 --alter table avs add column visitas bigint;
 --update avs set visitas=0;
 
+drop table reportes_movimiento_stock;
 create table reportes_movimiento_stock(
 	id bigserial primary key,
-	fecha timestamp,
-	almacenid varchar,
-	productoid bigint,
-	stock int
+	fecha timestamp default NOW(),
+	almacenid varchar references avs(id),
+	productoid bigint references productos(id),
+	stock int,
+	dif int
 );
 
---listo...
 
-alter table reportes_movimiento_stock add column dif int;
+CREATE OR REPLACE FUNCTION trigger_func_stock() returns TRIGGER AS $$
+begin
+	insert into reportes_movimiento_stock(almacenid,productoid,stock,dif)values(NEW.id_av,NEW.id_producto, NEW.cantidad,NEW.cantidad-OLD.cantidad);
+    	return NEW;
+END
+$$ language plpgsql;
 
+CREATE TRIGGER trigger_stock 
+before UPDATE on stock 
+for each row execute procedure trigger_func_stock();
+
+--list 4/11 11:53
 
 
 
