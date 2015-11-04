@@ -1,6 +1,9 @@
 package com.sapo.controllers;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.ejb.LocalBean;
@@ -95,6 +98,95 @@ public class reportesController {
     	return Response.status(200).entity(reportes).build();
     }
     
+    @GET
+   	@Path("/movimientos/{usuario}")
+   	@Consumes(MediaType.APPLICATION_JSON)
+   	@Produces(MediaType.APPLICATION_JSON)
+   	public Response getMovimientosAlmacenes(@PathParam("usuario")String usuario, @QueryParam("dias") Integer dias){	
+    	Usuario u = em.find(Usuario.class,usuario);
+    	if(u==null)
+    		return Response.status(404).build();
+    	if(dias==null)
+    		dias=4;
+    	
+    	List<Av> almacenesusuario = u.getAvs1();
+    	Calendar c = Calendar.getInstance();
+    	//c.add(Calendar.DATE, -dias);
+    	//beginDay(c);
+    	
+    	
+    	//create
+    	DataReporteAlmacen reportes= new DataReporteAlmacen();
+    	ArrayList<String> labels = new ArrayList<>();
+
+    	reportes.setLabels(labels);
+    	reportes.setSeries(new ArrayList<String>());
+    	reportes.setData(new ArrayList<List<Long>>());
+    	
+    	for(int i=0; i<dias;i++){
+    		Timestamp t = new Timestamp(c.getTimeInMillis());
+        	reportes.getSeries().add(t.toString());
+    		c.add(Calendar.DATE, -1);
+    	}
+    	
+    	//datareporte end.
+		//Timestamp t3= new Timestamp(c.getTimeInMillis());
+
+    	//System.out.println("FECHA DE HOY :: "+t3.toString());
+    	for(int i=0; i<almacenesusuario.size();i++){
+    		//serie
+    		reportes.getLabels().add(almacenesusuario.get(i).getId());
+    		String almacen= almacenesusuario.get(i).getId();
+    		
+    		List<Long> stock_fecha = new ArrayList<>();
+    		
+    		for(int j=0; j<dias; j++){
+    			Calendar cal = Calendar.getInstance();
+    			beginDay(cal);
+    			cal.add(Calendar.DATE, -j);
+    			Timestamp t1= new Timestamp(cal.getTimeInMillis());
+
+    			cal.add(Calendar.DATE, 1);
+    			Timestamp t2= new Timestamp(cal.getTimeInMillis());
+    			
+    			System.out.println("INTERVALO:"+t1.toString()+t2.toString());
+    			
+    			Query q = em.createQuery("SELECT r from ReportesMovimientoStock R where R.av.id=:almacen and R.fecha>=:t1 and R.fecha<:t2 order by R.fecha");
+            	q.setParameter("almacen", almacen);
+            	q.setParameter("t1", t1);
+            	q.setParameter("t2", t2);
+
+            	
+            	
+            	HashMap<Long, Integer> productos = new HashMap<>();
+            	Integer init_prod =0;
+            	
+            	@SuppressWarnings("unchecked")
+        		List<ReportesMovimientoStock> rep = q.getResultList();
+
+            	for(ReportesMovimientoStock r: rep){
+            		Calendar tt = Calendar.getInstance();
+            		tt.setTimeInMillis(r.getFecha().getTime());
+            		beginDay(tt); //truncates
+            		Long key= tt.getTimeInMillis();    		
+            		Long prod = r.getProducto().getId();
+
+            		if(!productos.containsKey(prod)){
+            			productos.put(key, r.getStock());
+            			init_prod+=r.getStock();
+            		}
+
+            	}
+            	stock_fecha.add((long)init_prod);
+
+            	
+    		}
+    		reportes.getData().add(stock_fecha);
+	
+    	}
+
+       	return Response.status(200).entity(reportes).build();
+    }
     
     
     @GET
@@ -126,6 +218,15 @@ public class reportesController {
     		ret.add(drs);
     	}
     	return Response.status(200).entity(ret).build();
+    }
+    
+    
+    
+    private static void beginDay(Calendar calendar){
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0); 	
     }
     
 }
