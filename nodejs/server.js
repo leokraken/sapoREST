@@ -13,8 +13,8 @@ app.use(bodyParser.json());
 /*CONFIG*/
 var url = "mongodb://tsi2:tsi2@ds043962.mongolab.com:43962/krakenmongo";
 var WS_PORT = 8080;
-//var SAPO_URL = "sapo-backendrs.rhcloud.com";
-var SAPO_HOST = 'localhost';
+var SAPO_URL = "sapo-backendrs.rhcloud.com";
+//var SAPO_HOST = 'localhost';
 var ML_API = 'https://api.mercadolibre.com';
 
 
@@ -70,23 +70,23 @@ app.post('/mercadolibre/addproductos', function(req,res){
 			      .end(function (response) {
 					//java rest
 					var response1 = response;
-					
-					var azureRequest =  unirest.post("https://"+SAPO_HOST+"/openshiftproject/rest/productos/create?mongo=false")
-						.type('json')
-						//.headers({"Ocp-Apim-Trace":"true","Ocp-Apim-Subscription-Key":"9f86432ae415401db0383f63ce64c4fe"})
-						.send(
-						{
+					var dataproducto= {
 							"nombre":response.body.title,
 							"descripcion": "",
 							"categoria": req.body[index].categoria,
 							"isgenerico":req.body[index].generico,
 							"id":1
-						})
+							};
+					var azureRequest =  unirest.post("http://"+SAPO_HOST+":8080/openshiftproject/rest/productos/create?mongo=false")
+						.type('json')
+						//.headers({"Ocp-Apim-Trace":"true","Ocp-Apim-Subscription-Key":"9f86432ae415401db0383f63ce64c4fe"})
+						.send(dataproducto)
 						.end(function(response){
 							console.log("Producto agregado a la base Postgresql.");
 							console.log("ID producto: "+response.body.id);
 							//ajusto id rdbms
 							response1.body.rdbms_id=response.body.id;
+							response1.body.rdbms_producto=response.body;
 
 							//mongo
 							var MongoClient = require('mongodb').MongoClient; 
@@ -242,7 +242,7 @@ var Request = unirest.get('http://'+SAPO_HOST+':8080/openshiftproject/rest/categ
 
 
 app.get('/algoritmos/categorias', function(req,res){
-	var Request = unirest.get('http://'+SAPO_HOST+':8080/openshiftproject/rest/algoritmos/categorias')
+	var Request = unirest.get('http://'+SAPO_HOST+'/openshiftproject/rest/algoritmos/categorias')
 		.type('json')
 		.end(function (response) {
 
