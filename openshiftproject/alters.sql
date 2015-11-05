@@ -62,4 +62,4 @@ CREATE TABLE comentarios(
 );
 update productos set tags=null;
 
-
+--listo 5/11 2:14
