@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 /*CONFIG*/
 var url = "mongodb://tsi2:tsi2@ds043962.mongolab.com:43962/krakenmongo";
 var WS_PORT = 8080;
-var SAPO_URL = "sapo-backendrs.rhcloud.com";
+var SAPO_HOST = "sapo-backendrs.rhcloud.com";
 //var SAPO_HOST = 'localhost';
 var ML_API = 'https://api.mercadolibre.com';
 
@@ -77,7 +77,7 @@ app.post('/mercadolibre/addproductos', function(req,res){
 							"isgenerico":req.body[index].generico,
 							"id":1
 							};
-					var azureRequest =  unirest.post("http://"+SAPO_HOST+":8080/openshiftproject/rest/productos/create?mongo=false")
+					var azureRequest =  unirest.post("http://"+SAPO_HOST+"/openshiftproject/rest/productos/create?mongo=false")
 						.type('json')
 						//.headers({"Ocp-Apim-Trace":"true","Ocp-Apim-Subscription-Key":"9f86432ae415401db0383f63ce64c4fe"})
 						.send(dataproducto)
