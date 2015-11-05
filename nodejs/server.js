@@ -71,7 +71,7 @@ app.post('/mercadolibre/addproductos', function(req,res){
 					//java rest
 					var response1 = response;
 					
-					var azureRequest =  unirest.post("https://"+SAPO_HOST+"/openshiftproject/rest/productos/create")
+					var azureRequest =  unirest.post("https://"+SAPO_HOST+"/openshiftproject/rest/productos/create?mongo=false")
 						.type('json')
 						//.headers({"Ocp-Apim-Trace":"true","Ocp-Apim-Subscription-Key":"9f86432ae415401db0383f63ce64c4fe"})
 						.send(

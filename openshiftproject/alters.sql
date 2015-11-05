@@ -51,7 +51,15 @@ for each row execute procedure trigger_func_stock();
 --list 4/11 11:53
 
 
+alter table productos add column tags varchar;
 
-
+CREATE TABLE comentarios(
+	id bigserial primary key,
+	almacenid varchar references avs(id),
+	usuarioid varchar references usuarios(id),
+	comentario varchar,
+	fecha timestamp default now()
+);
+update productos set tags=null;
 
 

@@ -1,12 +1,15 @@
 package com.sapo.controllers;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -24,6 +27,7 @@ import javax.ws.rs.core.UriInfo;
 
 import com.sapo.datatypes.DataAlmacen;
 import com.sapo.datatypes.DataCategoria;
+import com.sapo.datatypes.DataComentario;
 import com.sapo.datatypes.DataNotificacionStock;
 import com.sapo.datatypes.DataPersona;
 import com.sapo.datatypes.DataProducto;
@@ -33,6 +37,7 @@ import com.sapo.datatypes.DataStockLite;
 import com.sapo.datatypes.DataStockProducto;
 import com.sapo.entities.Av;
 import com.sapo.entities.Categoria;
+import com.sapo.entities.Comentario;
 import com.sapo.entities.Notificaciones;
 import com.sapo.entities.Producto;
 import com.sapo.entities.Stock;
@@ -434,5 +439,76 @@ public class almacenesController {
 		return Response.status(200).build();
 		
 	}
+	
+	@GET
+	@Path("datacomentario")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public DataComentario getDataComentario(){
+		return new DataComentario();
+	}
+	
+	
+	@POST
+	@Path("{almacen}/comentarios")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response agregarComentario(@PathParam("almacen") String almacen,DataComentario dc){
+		try{
+			
+			Usuario u = em.find(Usuario.class, dc.getUsuario());
+			Av av = em.find(Av.class, almacen);
+			/*
+			if(!av.getUsuarios().contains(u)){
+				return Response.status(401).entity(dr).build();
+			}*/
+			Comentario c = new Comentario();
+			c.setAv(av);
+			c.setUsuario(u);
+			c.setFecha(new Timestamp(new Date().getTime()));
+			c.setComentario(dc.getComentario());
+			em.persist(c);
+			em.flush();
+			
+			dc.setComentarioid(c.getId());
+			return Response.status(201).entity(dc).build();
+
+		}catch(Exception e){
+			e.printStackTrace();
+			DataResponse dr = new DataResponse();
+			dr.setMensaje("Excepcion");
+			dr.setDescripcion(e.getMessage());
+			return Response.status(500).entity(dr).build();
+		}
+	}
+	
+	@DELETE
+	@Path("{almacen}/comentarios/{comentario}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response eliminarComentario(@PathParam("almacen") String almacen, @PathParam("comentario") Long comentario){
+		em.remove(em.find(Comentario.class, comentario));
+		return Response.status(200).build();
+	}
+
+	@GET
+	@Path("{almacen}/comentarios")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getComentarios(@PathParam("almacen") String almacen){
+		Query q = em.createQuery("select c from Comentario c where c.av.id=:av");
+		q.setParameter("av", almacen);
+		@SuppressWarnings("unchecked")
+		List<Comentario> comentarios = q.getResultList();
+		List<DataComentario> ret = new ArrayList<>();
+		for(Comentario c : comentarios){
+			DataComentario dc = new DataComentario();
+			dc.setComentario(c.getComentario());
+			dc.setComentarioid(c.getId());
+			dc.setUsuario(c.getUsuario().getId());
+			ret.add(dc);
+		}
+		return Response.status(200).entity(ret).build();
+	}
+		
 
 }

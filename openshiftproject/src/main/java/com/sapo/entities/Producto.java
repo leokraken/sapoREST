@@ -24,6 +24,8 @@ public class Producto implements Serializable {
 	private Boolean generico;
 
 	private String nombre;
+	
+	private String tags;
 
 	//bi-directional many-to-one association to ReportesMovimientoStock
 	@OneToMany(mappedBy="producto")
@@ -176,5 +178,15 @@ public class Producto implements Serializable {
 
 		return reportesMovimientoStock;
 	}
+
+	public String getTags() {
+		return tags;
+	}
+
+	public void setTags(String tags) {
+		this.tags = tags;
+	}
+	
+	
 	
 }

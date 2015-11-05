@@ -1,8 +1,8 @@
 package com.sapo.controllers;
 
-import static com.mongodb.client.model.Filters.eq;
-
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.ejb.LocalBean;
@@ -24,15 +24,11 @@ import javax.ws.rs.core.Response;
 
 import org.bson.Document;
 
-import com.mongodb.Block;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoDatabase;
 import com.sapo.datatypes.DataProducto;
 import com.sapo.datatypes.DataResponse;
 import com.sapo.entities.Categoria;
 import com.sapo.entities.Producto;
+import com.sapo.utils.MongoController;
 
 @Stateless
 @LocalBean
@@ -40,8 +36,6 @@ import com.sapo.entities.Producto;
 @Produces({ "application/xml", "application/json" })
 @Consumes({ "application/xml", "application/json" })
 public class productoController {
-
-	private String MongoURL = "mongodb://tsi2:tsi2@ds043962.mongolab.com:43962/krakenmongo";
 
 	@PersistenceContext(unitName="SAPOLogica")
 	EntityManager em;
@@ -76,18 +70,8 @@ public class productoController {
 	@Path("{id}/detalles")
 	@Produces(MediaType.APPLICATION_JSON)
     public Response getProductoDetails(@PathParam(value="id")Long id){
-		MongoClient mongoClient = new MongoClient(new MongoClientURI(MongoURL));
-		MongoDatabase db = mongoClient.getDatabase("krakenmongo");
-		FindIterable<Document> iterable= db.getCollection("test").find(eq("rdbms_id",id));
-		iterable.forEach(new Block<Document>() {
-		    @Override
-		    public void apply(final Document document) {
-		        System.out.println(document);
-		    }
-		});
-		
-		Document e = iterable.first();
-		mongoClient.close();
+		MongoController mc = new MongoController();
+		Document e = mc.getProducto(id);
 		if(e==null){
 			DataResponse dr = new DataResponse();
 			dr.setMensaje("No encontrado");
@@ -122,7 +106,7 @@ public class productoController {
 	@Path("/create")
 	@Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addProducto(DataProducto dp){
+    public Response addProducto(@QueryParam("mongo")Boolean mongo, DataProducto dp){
     	Producto p = new Producto();
    	
     	p.setNombre(dp.getNombre());
@@ -139,6 +123,11 @@ public class productoController {
         	em.persist(p); 
         	em.flush();
         	dp.setID(p.getId());
+        	
+        	//mongodb
+        	if(mongo==null || mongo)
+        		new MongoController().addProduct(dp);
+        	
 			return Response.status(201).entity(dp).build();
 
     	}catch(Exception e){
@@ -170,6 +159,11 @@ public class productoController {
     	p.setCategoria(cat);
 
 		em.merge(p);
+		
+		//mongo thread
+		dp.setID(p.getId());
+		new MongoController().updateProduct(dp);
+		
 		return Response.status(200).build();
 	}
 
@@ -183,5 +177,75 @@ public class productoController {
 			em.remove(p);
 		return Response.status(200).build();
 	}
+	
+	/*
+	 * MongoClient mongoClient = new MongoClient(new MongoClientURI(MongoURL));
+		MongoDatabase db = mongoClient.getDatabase("krakenmongo");
+		FindIterable<Document> iterable= db.getCollection("test").find(eq("rdbms_id",id));
+		iterable.forEach(new Block<Document>() {
+		    @Override
+		    public void apply(final Document document) {
+		        System.out.println(document);
+		    }
+		});
+		
+		Document e = iterable.first();
+		mongoClient.close();
+		
+	 * */
+
+	@GET
+	@Path("test")
+	@Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+	public Response test(){
+		HashSet<String> h = new HashSet<>();
+		h.add("asd");
+		h.add("lala");
+		return Response.status(200).entity(h.toString()).build();
+	}
+	
+	@POST
+	@Path("{id}/tags/create")
+	@Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+	public Response addTag(@PathParam(value="id") Long id, List<String> tag){
+		Producto p = em.find(Producto.class, id);
+		List<String> tags_old = new ArrayList<>();
+		if(p.getTags()!=null && !p.getTags().equals("")){
+			tags_old= Arrays.asList(p.getTags().split(","));
+		}
+		HashSet<String> set = new HashSet<>(tags_old);
+		set.addAll(tag);
+		String joined = String.join(",", set);
+		p.setTags(joined);
+
+		//persist in mongo
+		new MongoController().addTags(tag, id);
+		
+		return Response.status(200).entity(tag).build();
+	}
+
+	@POST
+	@Path("{id}/tags/remove")
+	@Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+	public Response removeTag(@PathParam(value="id") Long id, List<String> tag){
+		Producto p = em.find(Producto.class, id);
+		List<String> tags_old = new ArrayList<>();
+		if(p.getTags()!=null && !p.getTags().equals("")){
+			tags_old= Arrays.asList(p.getTags().split(","));
+		}
+		HashSet<String> set = new HashSet<>(tags_old);
+		set.removeAll(tag);
+		String joined = String.join(",", set);
+		p.setTags(joined);
+		
+		//Mongo 
+		new MongoController().removeTags(tag, id);
+		
+		return Response.status(200).entity(tag).build();
+	}
+
 	
 }

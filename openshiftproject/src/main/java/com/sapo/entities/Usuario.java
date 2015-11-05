@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 import javax.persistence.*;
+
 import java.util.List;
 
 @Entity
@@ -31,6 +32,9 @@ public class Usuario implements Serializable {
 	@OneToMany(mappedBy="usuario")
 	private List<Notificaciones> notificacionesLimiteCuentas;
 
+	//bi-directional many-to-one association to Comentario
+	@OneToMany(mappedBy="usuario")
+	private List<Comentario> comentarios;
 	
 	
 	public TipoCuenta getTipocuenta() {
@@ -153,6 +157,28 @@ public class Usuario implements Serializable {
 		this.expires = expires;
 	}
 	
+	
+	public List<Comentario> getComentarios() {
+		return this.comentarios;
+	}
+
+	public void setComentarios(List<Comentario> comentarios) {
+		this.comentarios = comentarios;
+	}
+
+	public Comentario addComentario(Comentario comentario) {
+		getComentarios().add(comentario);
+		comentario.setUsuario(this);
+
+		return comentario;
+	}
+
+	public Comentario removeComentario(Comentario comentario) {
+		getComentarios().remove(comentario);
+		comentario.setUsuario(null);
+
+		return comentario;
+	}
 	
 	
 }

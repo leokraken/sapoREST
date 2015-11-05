@@ -2,6 +2,7 @@ package com.sapo.entities;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
 import java.util.List;
 
 
@@ -21,6 +22,10 @@ public class Av implements Serializable {
 	private Boolean privada=false;
 	
 	private Long visitas = (long) 0;
+	
+	//bi-directional many-to-one association to Comentario
+	@OneToMany(mappedBy="av")
+	private List<Comentario> comentarios;
 	
 	//bi-directional many-to-many association to Categoria
 	@ManyToMany
@@ -195,4 +200,27 @@ public class Av implements Serializable {
 
 		return reportesMovimientoStock;
 	}
+	
+	public List<Comentario> getComentarios() {
+		return this.comentarios;
+	}
+
+	public void setComentarios(List<Comentario> comentarios) {
+		this.comentarios = comentarios;
+	}
+
+	public Comentario addComentario(Comentario comentario) {
+		getComentarios().add(comentario);
+		comentario.setAv(this);
+
+		return comentario;
+	}
+
+	public Comentario removeComentario(Comentario comentario) {
+		getComentarios().remove(comentario);
+		comentario.setAv(null);
+
+		return comentario;
+	}
+	
 }
