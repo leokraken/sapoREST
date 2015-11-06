@@ -63,3 +63,6 @@ CREATE TABLE comentarios(
 update productos set tags=null;
 
 --listo 5/11 2:14
+alter table productos add column imagenes varchar;
+update productos set imagenes=null;
+

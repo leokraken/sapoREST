@@ -2,6 +2,11 @@ package com.sapo.entities;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import com.sapo.datatypes.DataProducto;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -26,6 +31,8 @@ public class Producto implements Serializable {
 	private String nombre;
 	
 	private String tags;
+	
+	private String imagenes;
 
 	//bi-directional many-to-one association to ReportesMovimientoStock
 	@OneToMany(mappedBy="producto")
@@ -186,7 +193,34 @@ public class Producto implements Serializable {
 	public void setTags(String tags) {
 		this.tags = tags;
 	}
-	
-	
-	
+
+	public String getImagenes() {
+		return imagenes;
+	}
+
+	public void setImagenes(String imagenes) {
+		this.imagenes = imagenes;
+	}
+		
+	public DataProducto getDataProducto(){
+		DataProducto dp = new DataProducto();
+		dp.setCategoria(categoria.getId());
+		dp.setDescripcion(descripcion);
+		dp.setID(id);
+		dp.setIsgenerico(generico);
+		dp.setNombre(nombre);
+		
+		List<String> images = new ArrayList<>();
+		if(tags!=null && !tags.equals("")){
+			images= Arrays.asList(tags.split(","));
+		}	
+		List<String> taggs = new ArrayList<>();
+		if(tags!=null && !tags.equals("")){
+			taggs= Arrays.asList(tags.split(","));
+		}	
+		
+		dp.setImagenes(images);
+		dp.setTags(taggs);
+		return dp;
+	}
 }

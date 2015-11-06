@@ -1,5 +1,7 @@
 package com.sapo.datatypes;
 
+import java.util.List;
+
 public class DataProducto {
 
 	private Long ID;
@@ -7,6 +9,8 @@ public class DataProducto {
 	private String descripcion;
 	private Long categoria;
 	private Boolean isgenerico;
+	private List<String> tags;
+	private List<String> imagenes;
 
 	public Boolean getIsgenerico() {
 		return isgenerico;
@@ -42,6 +46,21 @@ public class DataProducto {
 	public void setID(Long iD) {
 		ID = iD;
 	}
-	
-	
+
+	public List<String> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<String> tags) {
+		this.tags = tags;
+	}
+
+	public List<String> getImagenes() {
+		return imagenes;
+	}
+
+	public void setImagenes(List<String> imagenes) {
+		this.imagenes = imagenes;
+	}
+
 }

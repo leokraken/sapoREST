@@ -57,13 +57,7 @@ public class productoController {
 	@Produces(MediaType.APPLICATION_JSON)
     public DataProducto getProducto(@PathParam(value="id")Long id){
     	Producto p = em.find(Producto.class, id);  
-    	DataProducto dp = new  DataProducto();
-    	dp.setIsgenerico(p.getGenerico());
-    	dp.setDescripcion(p.getDescripcion());
-    	dp.setNombre(p.getNombre());
-    	dp.setID(p.getId());
-    	dp.setCategoria(p.getCategoria().getId());
-    	return dp;
+    	return p.getDataProducto();
     }
 
 	@GET
@@ -88,14 +82,8 @@ public class productoController {
     	List<Producto>  prods = query.getResultList();
     	List<DataProducto> ret = new ArrayList<DataProducto>();
 		for(Producto p : prods){
-	    	DataProducto dp = new  DataProducto();
-	    	dp.setIsgenerico(p.getGenerico());
-	    	dp.setDescripcion(p.getDescripcion());
-	    	dp.setNombre(p.getNombre());
-	    	dp.setID(p.getId());
-	    	dp.setCategoria(p.getCategoria().getId());
 			if(generico==null || generico.equals(p.getGenerico())){
-		    	ret.add(dp);
+		    	ret.add(p.getDataProducto());
     		}
 		}
 		return ret;
@@ -124,9 +112,9 @@ public class productoController {
         	em.flush();
         	dp.setID(p.getId());
         	
-        	//mongodb
+        	//MONGO
         	if(mongo==null || mongo)
-        		new MongoController().addProduct(dp);
+        		new MongoController().upsertProduct(dp);
         	
 			return Response.status(201).entity(dp).build();
 
@@ -143,7 +131,7 @@ public class productoController {
 	//else user
 	@PUT
 	@Path("{id}")
-	@Produces({MediaType.APPLICATION_JSON,MediaType.TEXT_PLAIN})
+	@Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
 	public Response updateProducto(@PathParam(value="id") Long id,DataProducto dp){
 		Producto p = em.find(Producto.class, id);
@@ -162,14 +150,14 @@ public class productoController {
 		
 		//mongo thread
 		dp.setID(p.getId());
-		new MongoController().updateProduct(dp);
+		new MongoController().upsertProduct(dp);
 		
 		return Response.status(200).build();
 	}
 
 	@DELETE
 	@Path("{id}")
-	@Produces({MediaType.APPLICATION_JSON,MediaType.TEXT_PLAIN})
+	@Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
 	public Response deleteProducto(@PathParam(value="id") Long id){
 		Producto p = em.find(Producto.class, id);
@@ -220,8 +208,9 @@ public class productoController {
 		String joined = String.join(",", set);
 		p.setTags(joined);
 
-		//persist in mongo
-		new MongoController().addTags(tag, id);
+		//MONGO
+		DataProducto dp = p.getDataProducto();
+		new MongoController().upsertProduct(dp);;
 		
 		return Response.status(200).entity(tag).build();
 	}
@@ -242,10 +231,73 @@ public class productoController {
 		p.setTags(joined);
 		
 		//Mongo 
-		new MongoController().removeTags(tag, id);
+		DataProducto dp = p.getDataProducto();
+		new MongoController().upsertProduct(dp);
 		
 		return Response.status(200).entity(tag).build();
 	}
 
+	
+	@POST
+	@Path("{id}/imagenes/create")
+	@Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+	public Response addImages(@PathParam(value="id") Long id, List<String> images){
+		try{
+			Producto p = em.find(Producto.class, id);
+			List<String> images_old = new ArrayList<>();
+			if(p.getTags()!=null && !p.getTags().equals("")){
+				images_old= Arrays.asList(p.getTags().split(","));
+			}
+			HashSet<String> set = new HashSet<>(images_old);
+			set.addAll(images);
+			String joined = String.join(",", set);
+			p.setTags(joined);
+			
+			//MONGO
+			DataProducto dp = p.getDataProducto();
+			new MongoController().upsertProduct(dp);
+			
+			return Response.status(200).entity(dp).build();
+
+		}catch(Exception e){
+			e.printStackTrace();
+			DataResponse dr = new DataResponse();
+			dr.setMensaje("Error agregar imagenes");
+			dr.setDescripcion("Problema en mongodb");
+			return Response.status(500).entity(dr).build();
+		}		
+	}
+	
+	@POST
+	@Path("{id}/imagenes/remove")
+	@Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+	public Response removeImages(@PathParam(value="id") Long id, List<String> images){
+		try{
+			Producto p = em.find(Producto.class, id);
+			List<String> images_old = new ArrayList<>();
+			if(p.getTags()!=null && !p.getTags().equals("")){
+				images_old= Arrays.asList(p.getTags().split(","));
+			}
+			HashSet<String> set = new HashSet<>(images_old);
+			set.removeAll(images);
+			String joined = String.join(",", set);
+			p.setTags(joined);
+			
+			//update doc mongo
+			DataProducto dp = p.getDataProducto();	
+			new MongoController().upsertProduct(dp);
+			
+			return Response.status(200).entity(dp).build();
+
+		}catch(Exception e){
+			e.printStackTrace();
+			DataResponse dr = new DataResponse();
+			dr.setMensaje("Error remover imagenes");
+			dr.setDescripcion("Problema en mongodb");
+			return Response.status(500).entity(dr).build();
+		}		
+	}
 	
 }
