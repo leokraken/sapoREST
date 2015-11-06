@@ -3,12 +3,15 @@ var bodyParser = require("body-parser");
 var app = express();
 var assert = require('assert');
 var unirest = require('unirest');
-var WebSocket = require('ws');
+//var WebSocket = require('ws');
 
 var wordNet = require('wordnet-magic');
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+
+
+
 
 /*CONFIG*/
 var url = "mongodb://tsi2:tsi2@ds043962.mongolab.com:43962/krakenmongo";
@@ -19,12 +22,6 @@ var ML_API = 'https://api.mercadolibre.com';
 
 
 /*WEBSOCKET CLIENT*/
-var ws = new WebSocket('ws://'+SAPO_HOST+':'+WS_PORT+'/openshiftproject/templatenotifications');
-ws.on('open', function() {});
-ws.on('message', function(message) {
-    console.log('received: %s', message);
-});
-
 
 //Listar las categorias, el siguiente paso es buscar productos por categorias.
 app.get('/mercadolibre/categorias', function(req,res){
@@ -123,18 +120,6 @@ app.post('/mercadolibre/addproductos', function(req,res){
 /************************************************/
 /*		Templates			*/
 /************************************************/
-
-app.get('/ws',function(req,res){
-	var WebSocket = require('ws')
-	  , ws = new WebSocket('ws://'+SAPO_HOST+':'+WS_PORT+'/openshiftproject/templatenotifications');
-	ws.on('open', function() {
-	    ws.send('Nuevo template recomendado! ');
-	});
-	ws.on('message', function(message) {
-	    console.log('received: %s', message);
-	});
-});
-
 
 app.get('/algoritmos/templates', function(req,res){
 var umbral = req.query.umbral || 2;
@@ -282,13 +267,81 @@ app.get('/algoritmos/categorias', function(req,res){
 );
 
 
+app.get('/client', function(req,res){
+	console.log('sticky');
+	io.of('/templates').emit('receive', 'server this..');
+	res.send('ok');
+});
+
+
+
+
 
 //listener
 var server_port = process.env.OPENSHIFT_NODEJS_PORT || 3000;
 var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
  
-app.listen(server_port, server_ip_address, function () {
+
+var server = app.listen(server_port, server_ip_address, function () {
   console.log( "Listening on " + server_ip_address + ", server_port " + server_port )
+});
+
+/*Websocket Server+ REDIS = 11*/
+
+var io = require('socket.io')(server);
+//var redis = require('socket.io-redis');
+//io.adapter(redis('14394','pub-redis-14394.us-east-1-4.5.ec2.garantiadata.com' ,{auth_pass:'kraken'}));
+var host =  'pub-redis-14394.us-east-1-4.5.ec2.garantiadata.com';
+var port = 14394;
+var redis = require('redis').createClient;
+var adapter = require('socket.io-redis');
+var pub = redis(port, host, { auth_pass: "kraken" });
+var sub = redis(port, host, { detect_buffers: true, auth_pass: "kraken" });
+io.adapter(adapter({ pubClient: pub, subClient: sub }));
+
+
+//io.adapter(redis({ host: 'localhost', port: 6379 }));
+// pub-redis-14394.us-east-1-4.5.ec2.garantiadata.com:14394 
+/*WEBSOCKETS*/
+
+
+io//.sockets
+.of('/sapochat')
+.on('connection', function (socket) {
+
+	socket.on('adduser', function(username, almacen){
+		console.log('user joined '+username);
+		socket.username = username;
+		socket.room = almacen;
+		socket.join(almacen);
+	});
+
+	socket.on('sendchat', function (data) {
+		io.of('/sapochat').in(socket.room).emit('receivechat', socket.username, data);
+		console.log(data);
+	});
+
+
+	// when the user disconnects.. perform this
+	socket.on('disconnect', function(){
+		console.log('disconnect');
+		socket.leave(socket.room);
+	});
+
+
+});
+
+
+io//.sockets
+.of('/templates')
+.on('connection', function (socket) {
+	socket.on('sendnotification', function (data) {
+		socket.broadcast.emit('receive', data);
+		console.log(data);
+	});
+	socket.on('disconnect', function(){
+		console.log('disconnect');
+	});
 });
 
 
