@@ -66,3 +66,5 @@ update productos set tags=null;
 alter table productos add column imagenes varchar;
 update productos set imagenes=null;
 
+alter table usuarios add column notificado boolean;
+

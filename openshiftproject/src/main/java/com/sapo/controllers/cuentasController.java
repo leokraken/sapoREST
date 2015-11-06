@@ -25,6 +25,7 @@ import javax.ws.rs.core.Response;
 import com.sapo.datatypes.DataCuenta;
 import com.sapo.datatypes.DataNotificacionCuentas;
 import com.sapo.datatypes.DataResponse;
+import com.sapo.entities.Notificaciones;
 import com.sapo.entities.TipoCuenta;
 import com.sapo.entities.Usuario;
 
@@ -154,15 +155,25 @@ public class cuentasController {
 		}else{
 			q=em.createQuery("select u from Usuario u");		
 		}
+		
 		List<Usuario> users = q.getResultList();
 		List<DataNotificacionCuentas> nots = new ArrayList<>();
 		for(Usuario u : users){
-			DataNotificacionCuentas n = new DataNotificacionCuentas();
-			n.setExpira(u.getExpires());
-			n.setUsuario(u.getId());
-			n.setTipo_cuenta(u.getTipocuenta().getId());
-			n.setAlias_cuenta(u.getTipocuenta().getNombre());
-			nots.add(n);
+			Boolean not=true;
+			for(Notificaciones n : u.getNotificacionesLimiteCuentas()){
+				if(n.getUsuario().getId()==u.getId() && n.getTipoNotificacion().getId()==1){
+					not=false;
+					break;
+				}
+			}
+			if(not){
+				DataNotificacionCuentas n = new DataNotificacionCuentas();
+				n.setExpira(u.getExpires());
+				n.setUsuario(u.getId());
+				n.setTipo_cuenta(u.getTipocuenta().getId());
+				n.setAlias_cuenta(u.getTipocuenta().getNombre());
+				nots.add(n);			
+			}
 		}
 		return Response.status(200).entity(nots).build();
 	}
