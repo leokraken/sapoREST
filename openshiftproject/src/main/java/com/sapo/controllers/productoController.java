@@ -247,12 +247,12 @@ public class productoController {
 			Producto p = em.find(Producto.class, id);
 			List<String> images_old = new ArrayList<>();
 			if(p.getTags()!=null && !p.getTags().equals("")){
-				images_old= Arrays.asList(p.getTags().split(","));
+				images_old= Arrays.asList(p.getImagenes().split(","));
 			}
 			HashSet<String> set = new HashSet<>(images_old);
 			set.addAll(images);
 			String joined = String.join(",", set);
-			p.setTags(joined);
+			p.setImagenes(joined);
 			
 			//MONGO
 			DataProducto dp = p.getDataProducto();
@@ -277,13 +277,13 @@ public class productoController {
 		try{
 			Producto p = em.find(Producto.class, id);
 			List<String> images_old = new ArrayList<>();
-			if(p.getTags()!=null && !p.getTags().equals("")){
-				images_old= Arrays.asList(p.getTags().split(","));
+			if(p.getTags()!=null && !p.getImagenes().equals("")){
+				images_old= Arrays.asList(p.getImagenes().split(","));
 			}
 			HashSet<String> set = new HashSet<>(images_old);
 			set.removeAll(images);
 			String joined = String.join(",", set);
-			p.setTags(joined);
+			p.setImagenes(joined);
 			
 			//update doc mongo
 			DataProducto dp = p.getDataProducto();	
