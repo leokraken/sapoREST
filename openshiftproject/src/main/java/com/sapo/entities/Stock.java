@@ -13,8 +13,8 @@ public class Stock implements Serializable {
 	private StockPK id;
 
 	private Integer cantidad;
-	private Integer minimo;
-	private Boolean notifica = false;
+	//private Integer minimo;
+	//private Boolean notifica = false;
 	
 	//bi-directional many-to-one association to Av
 	@ManyToOne
@@ -62,7 +62,7 @@ public class Stock implements Serializable {
 	public void setProducto(Producto producto) {
 		this.producto = producto;
 	}
-
+	/*
 	public Integer getMinimo() {
 		return minimo;
 	}
@@ -77,6 +77,6 @@ public class Stock implements Serializable {
 
 	public void setNotifica(Boolean notifica) {
 		this.notifica = notifica;
-	}
+	}*/
 	
 }

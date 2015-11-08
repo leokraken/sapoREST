@@ -18,5 +18,8 @@
 		<class>com.sapo.entities.TipoNotificacion</class>
 		<class>com.sapo.entities.ReportesMovimientoStock</class>
 		<class>com.sapo.entities.Comentario</class>
+		<class>com.sapo.entities.NotificacionesPersonalizada</class>
+		<class>com.sapo.entities.ProductoUsuarioTiendaNotificacion</class>
+		<class>com.sapo.entities.ProductoUsuarioTiendaNotificacionPK</class>
 	</persistence-unit>
 </persistence>

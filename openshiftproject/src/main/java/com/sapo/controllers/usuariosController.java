@@ -60,6 +60,24 @@ public class usuariosController {
     	return dp;
     }
     
+	@GET
+	@Path("{usuario}/tiendascolabora")
+	@Produces(MediaType.APPLICATION_JSON)
+    public Response getTiendasColaboracionUsuario(@PathParam(value="usuario") String usuario){
+    	Usuario u = em.find(Usuario.class, usuario);
+    	List<DataAlmacen> ret = new ArrayList<>();
+    	for(Av a : u.getAvs2()){
+    		DataAlmacen da = new DataAlmacen();
+    		da.setId(a.getId());
+    		da.setNombre(a.getNombre());
+    		da.setPrivado(a.getPrivada());
+    		da.setUsuario(a.getUsuario().getId());
+    		da.setDescripcion(a.getDescripcion());
+    		ret.add(da);    		
+    	}
+    	return Response.status(200).entity(ret).build();
+    }
+	
 	//user || admin
 	@GET
 	@Path("")

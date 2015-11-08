@@ -65,6 +65,22 @@ update productos set tags=null;
 --listo 5/11 2:14
 alter table productos add column imagenes varchar;
 update productos set imagenes=null;
+--listo..
 
-alter table usuarios add column notificado boolean;
+create table notificaciones_personalizadas(
+	id bigserial primary key,
+	usuarioid varchar references usuarios(id),
+	productoid bigint references productos(id),
+	avid varchar references avs(id),
+	mensaje varchar,
+	tipo_notificacion integer references tipo_notificaciones(id),
+	fecha timestamp default now()
+);
 
+create table producto_usuario_tienda_notificacion(
+	productoid bigint references productos(id),
+	usuarioid varchar references usuarios(id),
+	tiendaid varchar references avs(id),
+	minimo int,
+	primary key(productoid,usuarioid,tiendaid)
+);

@@ -24,6 +24,7 @@ import com.sapo.datatypes.DataNotificacion;
 import com.sapo.datatypes.DataResponse;
 import com.sapo.entities.Av;
 import com.sapo.entities.Notificaciones;
+import com.sapo.entities.NotificacionesPersonalizada;
 import com.sapo.entities.TipoNotificacion;
 import com.sapo.entities.Usuario;
 
@@ -180,5 +181,39 @@ public class notificationsController {
 		return Response.status(200).build();
 	}
 	
+	
+	@SuppressWarnings("unchecked")
+	@GET
+	@Path("{almacenID}/{usuario}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getNotificacionesAlmacenUsuario(@QueryParam("limit") Integer limit, 
+			@PathParam(value="almacenID")String almacenID,
+			@PathParam(value="usuario")String usuario)
+
+	{
+		Query q = em.createQuery("select pu from NotificacionesPersonalizada pu where pu.av.id=:av and pu.usuario.id=:usuario");
+		q.setParameter("av", almacenID);
+		q.setParameter("usuario", usuario);
+		List<NotificacionesPersonalizada> list = q.getResultList();
+		List<DataNotificacion> ret = new ArrayList<>();
+		for(NotificacionesPersonalizada np : list){
+			DataNotificacion n = new DataNotificacion();
+			n.setId(np.getId());
+			n.setMensaje(np.getMensaje());
+			n.setTipo_notificacion(np.getTipoNotificacione().getId());
+			ret.add(n);
+		}
+		
+		return Response.status(200).entity(ret).build();
+	}
+	
+	@DELETE
+	@Path("personalizadas/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteNotificacionPersonalizada(@PathParam(value="id")Long id)
+	{
+		em.remove(em.find(NotificacionesPersonalizada.class, id));
+		return Response.status(200).build();
+	}
    
 }

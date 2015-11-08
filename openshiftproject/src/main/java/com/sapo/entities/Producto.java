@@ -10,10 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 
 
-/**
- * The persistent class for the productos database table.
- * 
- */
 @Entity
 @Table(name="productos")
 @NamedQuery(name="Producto.findAll", query="SELECT p FROM Producto p")

@@ -38,8 +38,10 @@ import com.sapo.datatypes.DataStockProducto;
 import com.sapo.entities.Av;
 import com.sapo.entities.Categoria;
 import com.sapo.entities.Comentario;
-import com.sapo.entities.Notificaciones;
+import com.sapo.entities.NotificacionesPersonalizada;
 import com.sapo.entities.Producto;
+import com.sapo.entities.ProductoUsuarioTiendaNotificacion;
+import com.sapo.entities.ProductoUsuarioTiendaNotificacionPK;
 import com.sapo.entities.Stock;
 import com.sapo.entities.StockPK;
 import com.sapo.entities.TipoNotificacion;
@@ -329,19 +331,27 @@ public class almacenesController {
 				s.setCantidad(cantidad);
 				String mensaje= null;
 				/*Notifico caso sea pertinente*/
-				if(s.getNotifica() && s.getMinimo() > s.getCantidad()){		
-					Notificaciones np = new Notificaciones();
-					//np.setAv(em.find(Av.class, idAV));
-					//np.setProducto(em.find(Producto.class, productoID));
-					np.setUsuario(s.getAv().getUsuario());
-					mensaje = "Únicamente cuentas con "+s.getCantidad()+" unidades de "+s.getProducto().getNombre()+"!";
-					np.setMensaje(mensaje);
-					np.setTipoNotificacione(em.find(TipoNotificacion.class, 2));
-					em.persist(np);
-					em.flush();
-					
-					//TODO make send message
+				Query q = em.createQuery("select pu from ProductoUsuarioTiendaNotificacion pu where pu.av.id=:av and pu.producto.id=:producto");
+				q.setParameter("av", idAV);
+				q.setParameter("producto", productoID);
+
+				@SuppressWarnings("unchecked")
+				List<ProductoUsuarioTiendaNotificacion> reslist = q.getResultList();
+				for(ProductoUsuarioTiendaNotificacion ptn : reslist){
+					System.out.println(ptn.getAv().getId());
+					if(cantidad < ptn.getMinimo()){
+						NotificacionesPersonalizada np = new NotificacionesPersonalizada();
+						np.setAv(ptn.getAv());
+						np.setProducto(ptn.getProducto());
+						np.setUsuario(ptn.getUsuario());
+						mensaje = "Únicamente cuentas con "+s.getCantidad()+" unidades de "+s.getProducto().getNombre()+"!";
+						np.setMensaje(mensaje);
+						np.setTipoNotificacione(em.find(TipoNotificacion.class, 2));
+						em.persist(np);
+						em.flush();						
+					}				
 				}
+				
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -424,21 +434,72 @@ public class almacenesController {
 		
 	//eliminar notificaciones parametro
 	@POST
-	@Path("{almacenID}/notificaciones/stock")
+	@Path("{almacenID}/notificaciones/stock/{usuario}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response agregarNotificacionProducto(
 			@PathParam(value="almacenID")String almacenID,
+			@PathParam(value="usuario")String usuario,
 			DataNotificacionStock dn
 			){
-		StockPK sfk= new StockPK();
-		sfk.setIdAv(almacenID);
-		sfk.setIdProducto(dn.getProductoID());
-		Stock s = em.find(Stock.class, sfk);
-		s.setMinimo(dn.getMinimo());
-		s.setNotifica(dn.getNotifica());
+		ProductoUsuarioTiendaNotificacionPK pk = new ProductoUsuarioTiendaNotificacionPK();
+		pk.setProductoid(dn.getProductoID());
+		pk.setTiendaid(almacenID);
+		pk.setUsuarioid(usuario);
+		ProductoUsuarioTiendaNotificacion pu = new ProductoUsuarioTiendaNotificacion();
+		pu.setId(pk);
+		pu.setAv(em.find(Av.class, almacenID));
+		pu.setProducto(em.find(Producto.class, dn.getProductoID()));
+		pu.setUsuario(em.find(Usuario.class, usuario));
+		pu.setMinimo(dn.getMinimo());
+		em.persist(pu);
+		em.flush();
 		return Response.status(200).build();
 		
 	}
+	
+	@DELETE
+	@Path("{almacenID}/notificaciones/stock/{usuario}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteNotificacionProducto(
+			@PathParam(value="almacenID")String almacenID,
+			@PathParam(value="usuario")String usuario,
+			DataNotificacionStock dn
+			){
+		ProductoUsuarioTiendaNotificacionPK pk = new ProductoUsuarioTiendaNotificacionPK();
+		pk.setProductoid(dn.getProductoID());
+		pk.setTiendaid(almacenID);
+		pk.setUsuarioid(usuario);
+		ProductoUsuarioTiendaNotificacion pu = em.find(ProductoUsuarioTiendaNotificacion.class, pk);
+		em.remove(pu);
+		return Response.status(200).build();
+		
+	}
+	
+	@GET
+	@Path("{almacenID}/notificaciones/stock/{usuario}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getNotificacionesPersonalizadas(
+			@PathParam(value="almacenID")String almacenID,
+			@PathParam(value="usuario")String usuario
+			){
+		Query q = em.createQuery("select pu from ProductoUsuarioTiendaNotificacion pu where pu.av.id=:av and pu.usuario.id=:usuario");
+		q.setParameter("av", almacenID);
+		q.setParameter("usuario", usuario);
+		@SuppressWarnings("unchecked")
+		List<ProductoUsuarioTiendaNotificacion> list = q.getResultList();
+		List<DataNotificacionStock> ret = new ArrayList<>();
+		for(ProductoUsuarioTiendaNotificacion p : list){
+			DataNotificacionStock n = new DataNotificacionStock();
+			n.setMinimo(p.getMinimo());
+			n.setNotifica(true);
+			n.setProductoID(p.getProducto().getId());
+			ret.add(n);
+		}
+		return Response.status(200).entity(ret).build();
+		
+	}
+	
+	
 	
 	@GET
 	@Path("datacomentario")
