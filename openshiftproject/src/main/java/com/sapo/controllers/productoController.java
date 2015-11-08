@@ -188,7 +188,7 @@ public class productoController {
     @Consumes(MediaType.APPLICATION_JSON)
 	public Response test(){
 		HashSet<String> h = new HashSet<>();
-		h.add("asd");
+		h.add("jajaj");
 		h.add("lala");
 		return Response.status(200).entity(h.toString()).build();
 	}

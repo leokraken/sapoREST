@@ -137,6 +137,39 @@ public class notificationsController {
 		
 	}
 	
+	
+	@SuppressWarnings("unchecked")
+	@GET
+	@Path("{usuario}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getNotificacionesUsuario(@QueryParam("limit") Integer limit, @PathParam(value="usuario")String usuario){
+		
+		Query q= em.createQuery("select S from Notificaciones S "
+				+ "where S.tipoNotificacion.id=:tn"
+				+ " and S.usuario.id=:u"
+				+ " order by S.fecha DESC");
+		
+		q.setParameter("tn", 1);
+		q.setParameter("u", usuario);
+		List<Notificaciones> nots = null;
+
+		if(limit!=null)
+			nots = q.setMaxResults(limit).getResultList();
+		else
+			nots = q.getResultList();
+		
+		
+		List<DataNotificacion> datanots= new ArrayList<DataNotificacion>();
+		for (Notificaciones n : nots){
+			DataNotificacion dn = new DataNotificacion();
+			dn.setId(n.getId());
+			dn.setMensaje(n.getMensaje());
+			dn.setTipo_notificacion(n.getTipoNotificacion().getId());
+			datanots.add(dn);
+		}
+		return Response.status(200).entity(datanots).build();		
+	}
+	
 	@DELETE
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)

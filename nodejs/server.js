@@ -286,11 +286,9 @@ var server = app.listen(server_port, server_ip_address, function () {
   console.log( "Listening on " + server_ip_address + ", server_port " + server_port )
 });
 
-/*Websocket Server+ REDIS = 11*/
 
+/*Websocket Server+ REDIS = 11*/
 var io = require('socket.io')(server);
-//var redis = require('socket.io-redis');
-//io.adapter(redis('14394','pub-redis-14394.us-east-1-4.5.ec2.garantiadata.com' ,{auth_pass:'kraken'}));
 var host =  'pub-redis-14394.us-east-1-4.5.ec2.garantiadata.com';
 var port = 14394;
 var redis = require('redis').createClient;
@@ -299,41 +297,44 @@ var pub = redis(port, host, { auth_pass: "kraken" });
 var sub = redis(port, host, { detect_buffers: true, auth_pass: "kraken" });
 io.adapter(adapter({ pubClient: pub, subClient: sub }));
 
+/*WEBSOCKETS DEFINITION ENDPOINTS*/
 
-//io.adapter(redis({ host: 'localhost', port: 6379 }));
-// pub-redis-14394.us-east-1-4.5.ec2.garantiadata.com:14394 
-/*WEBSOCKETS*/
-
-
-io//.sockets
-.of('/sapochat')
+//CHAT
+io.of('/sapochat')
 .on('connection', function (socket) {
-
+	//join almacen
 	socket.on('adduser', function(username, almacen){
 		console.log('user joined '+username);
 		socket.username = username;
 		socket.room = almacen;
 		socket.join(almacen);
 	});
-
+	//envio mensaje
 	socket.on('sendchat', function (data) {
 		io.of('/sapochat').in(socket.room).emit('receivechat', socket.username, data);
 		console.log(data);
 	});
 
-
-	// when the user disconnects.. perform this
+	//
 	socket.on('disconnect', function(){
-		console.log('disconnect');
+		console.log(socket.username+' disconnected');
 		socket.leave(socket.room);
 	});
-
-
 });
 
+//TEMPLATES
+io.of('/templates')
+.on('connection', function (socket) {
+	socket.on('sendnotification', function (data) {
+		socket.broadcast.emit('receive', data);
+		console.log(data);
+	});
+	socket.on('disconnect', function(){
+		console.log('disconnect');
+	});
+});
 
-io//.sockets
-.of('/templates')
+io.of('/productos')
 .on('connection', function (socket) {
 	socket.on('sendnotification', function (data) {
 		socket.broadcast.emit('receive', data);
