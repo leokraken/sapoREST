@@ -84,3 +84,9 @@ create table producto_usuario_tienda_notificacion(
 	minimo int,
 	primary key(productoid,usuarioid,tiendaid)
 );
+
+--listo
+
+
+
+

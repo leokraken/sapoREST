@@ -16,8 +16,8 @@ app.use(bodyParser.json());
 /*CONFIG*/
 var url = "mongodb://tsi2:tsi2@ds043962.mongolab.com:43962/krakenmongo";
 var WS_PORT = 8080;
-var SAPO_HOST = "sapo-backendrs.rhcloud.com";
-//var SAPO_HOST = 'localhost';
+//var SAPO_HOST = "sapo-backendrs.rhcloud.com";
+var SAPO_HOST = 'localhost:8080';
 var ML_API = 'https://api.mercadolibre.com';
 
 
@@ -265,6 +265,115 @@ app.get('/algoritmos/categorias', function(req,res){
 	console.log(classifier.classify('did you buy a new drive?'));*/
 }
 );
+
+/*ALGORITMO PRODUCTOS*/
+app.get('/algoritmos/productos/run', function(req,res){
+	var umbral = req.query.umbral;
+	res.send({status:"algoritmo ejecutando..."});
+
+	var Request = unirest.get('http://'+SAPO_HOST+'/openshiftproject/rest/algoritmos/productos')
+		.type('json')
+		.end(function (response) {
+		//nombre,descripcion,isgenerico, tags, imagenes, categoria, id
+			var natural = require('natural');
+			var classifier = new natural.BayesClassifier();
+			
+			var candidatos = {};
+			var prods = response.body;
+
+			for( i=0; i< prods.length; i++ ){
+			if(!prods[i].isgenerico){
+			   console.log(prods[i].nombre);
+			   if(!(prods[i].nombre in candidatos)){
+			      //
+			      candidatos[prods[i].nombre]= { nombre: prods[i].nombre, descripciones_sug: [], tags:{}, cantidad:1, productos: [prods[i].id], clasificator:null};
+			      //agrego tags...
+			      for(t=0; t<prods[i].tags.length;t++){ candidatos[prods[i].nombre].tags[prods[i].tags[t]]= prods[i].tags[t]  };
+
+			      for(j=i+1;j<prods.length;j++){
+			         if(prods[i].nombre == prods[j].nombre){
+				    for(x=0;x<prods[j].tags.length;x++){
+					console.log('tags: '+prods[j].tags[x]);
+				       if(!(prods[j].tags[x] in candidatos[prods[j].nombre].tags)){
+					  candidatos[prods[j].nombre].tags[prods[j].tags[x]] =prods[j].tags[x];
+				       } 
+				    }
+				    candidatos[prods[i].nombre].descripciones_sug.push(candidatos[prods[j].nombre].descripcion);
+				    candidatos[prods[i].nombre].cantidad= candidatos[prods[i].nombre].cantidad+1;
+				    candidatos[prods[i].nombre].productos.push(prods[j].id);
+				 }  
+			      }
+			   }
+			}else{    //entreno con productos genericos
+				if(prods[i].descripcion!=null)
+				   classifier.addDocument(prods[i].descripcion, prods[i].id);
+				if(prods[i].tags.length>0)
+				   classifier.addDocument(prods[i].tags, prods[i].id);					
+			}//if
+			}//for
+
+			//entreno clasificador
+			classifier.train(); 
+			//console.log(classifier.getClassifications());
+			
+			console.log(umbral);
+			var array = [];
+			for(var c in candidatos){
+			   if(candidatos[c].cantidad>umbral){
+			      candidatos[c].clasificator= classifier.getClassifications(c);
+			      candidatos[c].tags = Object.keys(candidatos[c].tags);
+			      array.push(candidatos[c]);				
+			   }
+
+			}
+			array.sort(function(a,b){
+			return(b.cantidad-a.cantidad);});
+
+			console.log('IMPRIMI ARRAY!'+array);
+
+			//inserto en mongo
+			var MongoClient = require('mongodb').MongoClient; 
+			var productoid;
+			MongoClient.connect(url, {native_parser:true}, function(err, db) {
+			    assert.equal(null, err);
+			    db.collection('productos').drop(function (x,y){
+				db.collection('productos')
+				.insert({ "fecha": (new Date()).toJSON(), "productos": array}, function(err, result) {
+				    productoid = result.ops[0]._id;
+				    //envío al websocket
+				    //io.of('/productos').emit('receive', 'Nuevo producto recomendado: '+ productoid);
+				    db.close();
+				});//insert
+
+			    });//drop
+			    
+			});//connect
+
+		});
+});
+
+app.get('/algoritmos/productos', function(req,res){
+	var MongoClient = require('mongodb').MongoClient; 
+	var productoid;
+	MongoClient.connect(url, {native_parser:true}, function(err, db) {
+	    assert.equal(null, err);
+	    db.collection('productos')
+	    .findOne({}, function(err, result) {
+		    console.log(result);
+		    res.send(result);
+		    db.close();
+		    }
+	    );
+	});
+}
+);
+
+//ELIMINA PRODUCTO RECOMENDADO
+app.delete('/algoritmos/productos/:id', function(req,res){
+
+}
+);
+
 
 
 app.get('/client', function(req,res){
