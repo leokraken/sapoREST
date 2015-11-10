@@ -148,12 +148,7 @@ public class categoriaController {
     	}
     	List<DataProducto> ret = new ArrayList<DataProducto>();
     	for(Producto p : cat.getProductos()){
-    		DataProducto dp = new DataProducto();
-    		dp.setCategoria(p.getCategoria().getId());
-    		dp.setDescripcion(p.getDescripcion());
-    		dp.setID(p.getId());
-    		dp.setIsgenerico(p.getGenerico());
-    		dp.setNombre(p.getNombre());
+    		DataProducto dp = p.getDataProducto();
     		ret.add(dp);
     	}
     	return Response.status(200).entity(ret).build();

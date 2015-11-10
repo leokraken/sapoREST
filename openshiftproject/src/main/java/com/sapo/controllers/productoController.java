@@ -26,6 +26,8 @@ import org.bson.Document;
 
 import com.sapo.datatypes.DataProducto;
 import com.sapo.datatypes.DataResponse;
+import com.sapo.datatypes.DataUnificar;
+import com.sapo.entities.CarritoProducto;
 import com.sapo.entities.Categoria;
 import com.sapo.entities.Producto;
 import com.sapo.utils.MongoController;
@@ -298,6 +300,28 @@ public class productoController {
 			dr.setDescripcion("Problema en mongodb");
 			return Response.status(500).entity(dr).build();
 		}		
+	}
+	
+	@POST
+	@Path("/unificar")
+	@Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response doGenerico(DataUnificar du){
+		Producto nuevo = new Producto();
+		nuevo.setNombre(du.getNombre());
+		nuevo.setCategoria(em.find(Categoria.class, du.getCategoria()));
+		nuevo.setDescripcion(du.getDescripcion());
+		nuevo.setGenerico(true);
+		nuevo.setCarritoProductos(new ArrayList<CarritoProducto>());
+		for(Long productoid : du.getProductos()){
+			Producto p = em.find(Producto.class, productoid);
+			nuevo.getCarritoProductos().addAll(p.getCarritoProductos());
+			nuevo.getReportesMovimientoStocks().addAll(p.getReportesMovimientoStocks());
+			nuevo.getStocks().addAll(p.getStocks());
+			
+			
+		}
+		return Response.status(200).build();
 	}
 	
 }
