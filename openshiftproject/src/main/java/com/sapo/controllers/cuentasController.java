@@ -178,5 +178,18 @@ public class cuentasController {
 		return Response.status(200).entity(nots).build();
 	}
     
-    
+    @GET
+	@Path("{usuario}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getUsuarioCuenta(@PathParam("usuario") String usuario){ 
+    	Usuario u = em.find(Usuario.class, usuario);
+    	DataCuenta dc = new DataCuenta();
+    	dc.setCuentaID(u.getTipocuenta().getId());
+    	dc.setDescripcion(u.getTipocuenta().getDescripcion());
+    	dc.setNombre(u.getTipocuenta().getNombre());
+    	dc.setPrecio(u.getTipocuenta().getPrecio());
+    	dc.setTiempo(u.getTipocuenta().getTiempo());
+    	return Response.status(200).entity(dc).build();
+    }
 }
