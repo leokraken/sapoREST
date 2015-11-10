@@ -167,7 +167,19 @@ public class usuariosController {
     	almacen.setId(da.getId());
     	almacen.setNombre(da.getNombre());
     	almacen.setDescripcion(da.getDescripcion());
-    	almacen.setUsuario(em.find(Usuario.class,usuario));
+    	Usuario u = em.find(Usuario.class,usuario);
+    	almacen.setUsuario(u);
+    	if(u.getTipocuenta().getId()>1){
+    		almacen.setPrivada(da.getPrivado());
+    	}else{
+    		if(da.getPrivado()){
+    			DataResponse dr = new DataResponse();
+    			dr.setMensaje("Error cuenta no premium");
+    			dr.setDescripcion("Para crear un almacen privado debes poseer una cuenta premium.");
+    			return Response.status(401).entity(dr).build();
+    		}else
+    			almacen.setPrivada(false);
+    	}
     	//almacen.setPrivada(da.getPrivado());
     	try{
         	em.persist(almacen);

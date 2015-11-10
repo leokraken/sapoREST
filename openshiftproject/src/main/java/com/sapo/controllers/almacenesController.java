@@ -459,6 +459,7 @@ public class almacenesController {
 	
 	@DELETE
 	@Path("{almacenID}/notificaciones/stock/{usuario}")
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteNotificacionProducto(
 			@PathParam(value="almacenID")String almacenID,

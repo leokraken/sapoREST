@@ -20,7 +20,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.sapo.datatypes.DataEstadistica;
+import com.sapo.datatypes.reportes.DataEstadisticaUsuario;
 import com.sapo.datatypes.reportes.DataReporteAlmacen;
+import com.sapo.datatypes.reportes.DataReporteProducto;
 import com.sapo.datatypes.reportes.DataReporteStock;
 import com.sapo.entities.Av;
 import com.sapo.entities.ReportesMovimientoStock;
@@ -227,6 +230,76 @@ public class reportesController {
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0); 	
+    }
+    
+    @GET
+	@Path("/global")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+public Response getReportesGlobal(@QueryParam("productos") Integer productos){
+    	Query q_users= em.createQuery("select count(*) from Usuario u");
+    	Query q_prods = em.createQuery("select count(*) from Producto p");
+    	Query q_premium = em.createQuery("select count(*) from Usuario u where u.tipocuenta.id>1");
+    	Query q_categorias = em.createQuery("select count(*) from Categoria c where c.generica=true");
+    	
+    	if(productos==null)
+    		productos= 10;
+    	Query q_productos = em.createQuery("select s.producto.id, s.producto.nombre, s.producto.descripcion, count(*) from Stock s group by s.producto.id, s.producto.nombre, s.producto.descripcion order by count(s.producto.id) DESC");
+
+    	Long cantidad_u = (Long) q_users.getSingleResult();
+    	Long cantidad_p = (Long) q_prods.getSingleResult();
+    	Long user_premium = (Long) q_premium.getSingleResult();
+    	Long categorias = (Long) q_categorias.getSingleResult();
+    	@SuppressWarnings("unchecked")
+		List<Object[]> productosorder = q_productos.setMaxResults(productos).getResultList();
+    	
+    	List<DataReporteProducto> prods = new ArrayList<>();
+    	for(Object[] o : productosorder){
+    		Long p_id = (Long) o[0];
+    		String p_nombre = (String) o[1];
+    		String p_desc = (String) o[2];
+    		Long count = (Long) o[3];
+    		
+    		DataReporteProducto drp = new DataReporteProducto();
+    		drp.setId(p_id);
+    		drp.setDescripcion(p_desc);
+    		drp.setNombre(p_nombre);
+    		drp.setCantidad_tiendas(count);
+    		prods.add(drp);
+    	}
+    	
+    	DataEstadistica de = new DataEstadistica();
+    	de.setUsuarios_registrados(cantidad_u);
+    	de.setProductos_genericos(cantidad_p);
+    	de.setUsuarios_premium(user_premium);
+    	de.setCategorias_genericas(categorias);
+    	de.setProductos(prods);
+    	return Response.status(200).entity(de).build();
+    }
+    
+    @GET
+	@Path("/usuario/{usuario}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getReportesTienda(@PathParam("usuario") String usuario){
+    	Usuario u = em.find(Usuario.class, usuario);
+    	Long cant_almacenes = (long) u.getAvs1().size();
+    	
+    	Query q = em.createQuery("select count(*) from Notificaciones n where n.usuario.id=:usuario");
+    	q.setParameter("usuario", usuario);
+    	long notificaciones = (long)q.getSingleResult();
+    	List<Av> avs = u.getAvs1();
+    	long colaboradores = 0;
+    	for(Av a : avs){
+    		colaboradores+= a.getUsuarios().size();
+    	}
+    	DataEstadisticaUsuario deu = new DataEstadisticaUsuario();
+    	deu.setCantidad_almacenes(cant_almacenes);
+    	deu.setCantidad_colaboradores(colaboradores);
+    	deu.setCantidad_notificaciones(notificaciones);
+    	
+    	
+    	return Response.status(200).entity(deu).build();
     }
     
 }

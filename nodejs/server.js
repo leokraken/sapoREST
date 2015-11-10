@@ -16,8 +16,8 @@ app.use(bodyParser.json());
 /*CONFIG*/
 var url = "mongodb://tsi2:tsi2@ds043962.mongolab.com:43962/krakenmongo";
 var WS_PORT = 8080;
-//var SAPO_HOST = "sapo-backendrs.rhcloud.com";
-var SAPO_HOST = 'localhost:8080';
+var SAPO_HOST = "sapo-backendrs.rhcloud.com";
+//var SAPO_HOST = 'localhost:8080';
 var ML_API = 'https://api.mercadolibre.com';
 
 
