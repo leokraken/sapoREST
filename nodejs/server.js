@@ -382,7 +382,11 @@ app.get('/client', function(req,res){
 	res.send('ok');
 });
 
-
+app.post('/paypal', function(req,res){
+	console.log(req.body);
+	//io.of('/templates').emit('receive', 'server this..');
+	res.send('ok');
+});
 
 
 

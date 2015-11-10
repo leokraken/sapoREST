@@ -162,6 +162,7 @@ public class usuariosController {
 	@POST
 	@Path("{usuario}/almacenes/create")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
     public Response crearAlmacenUsuario(@PathParam(value = "usuario") String usuario, DataAlmacen da){
     	Av almacen = new Av();
     	almacen.setId(da.getId());

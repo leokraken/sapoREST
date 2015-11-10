@@ -285,7 +285,7 @@ public Response getReportesGlobal(@QueryParam("productos") Integer productos){
     	Usuario u = em.find(Usuario.class, usuario);
     	Long cant_almacenes = (long) u.getAvs1().size();
     	
-    	Query q = em.createQuery("select count(*) from Notificaciones n where n.usuario.id=:usuario");
+    	Query q = em.createQuery("select count(*) from NotificacionesPersonalizada n where n.usuario.id=:usuario");
     	q.setParameter("usuario", usuario);
     	long notificaciones = (long)q.getSingleResult();
     	List<Av> avs = u.getAvs1();
