@@ -60,7 +60,7 @@ app.post('/mercadolibre/search', function(req,res){
 //[{"id":"MLU430098893", "generico": false, "categoria":1}]
 app.post('/mercadolibre/addproductos', function(req,res){
 	var req1 = req;
-
+	console.log(req.body);
 	function dorequest(index){
 		var Request = unirest.get(ML_API+'/items/'+req.body[index].id)
 			      .type('json')
@@ -68,11 +68,11 @@ app.post('/mercadolibre/addproductos', function(req,res){
 					//java rest
 					var response1 = response;
 					var dataproducto= {
-							"nombre":response.body.title,
-							"descripcion": "",
-							"categoria": req.body[index].categoria,
-							"isgenerico":req.body[index].generico,
-							"id":1
+							nombre:response.body.title,
+							descripcion: "",
+							categoria: req.body[index].categoria,
+							isgenerico:req.body[index].generico,
+							id:1
 							};
 					var azureRequest =  unirest.post("http://"+SAPO_HOST+"/openshiftproject/rest/productos/create?mongo=false")
 						.type('json')
@@ -80,7 +80,7 @@ app.post('/mercadolibre/addproductos', function(req,res){
 						.send(dataproducto)
 						.end(function(response){
 							console.log("Producto agregado a la base Postgresql.");
-							console.log("ID producto: "+response.body.id);
+							console.log("ID producto: "+response.body);
 							//ajusto id rdbms
 							response1.body.rdbms_id=response.body.id;
 							response1.body.rdbms_producto=response.body;
