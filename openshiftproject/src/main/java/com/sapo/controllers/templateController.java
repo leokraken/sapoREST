@@ -77,10 +77,10 @@ public class templateController {
 		return ret;
 	}
 	
-	//admin
 	@POST
 	@Path("create")
-	@Produces(MediaType.APPLICATION_JSON)	
+	@Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)	
 	public Response createTemplate(DataTemplate datatemplate){
 		Template t = new Template();
 		t.setDescripcion(datatemplate.getDescripcion());

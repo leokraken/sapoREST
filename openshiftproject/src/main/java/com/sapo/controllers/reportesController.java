@@ -42,25 +42,7 @@ public class reportesController {
 	
     public reportesController() {
     }
-    /*
-    @GET
-	@Path("/{almacen}/valorizacion")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getEstadisticasAlmacen(@PathParam("almacen")String almacen){	
-    	Av a = em.find(Av.class,almacen);
-    	DataReporteAlmacen dra = new DataReporteAlmacen();
-    	dra.setProductos(a.getStocks().size());
-    	
-    	int stockcount = 0;
-    	for(Stock s: a.getStocks()){
-    		stockcount+= s.getCantidad();
-    	}
-    	dra.setStock(stockcount);
-    	dra.setVisitas(a.getVisitas());
-    	dra.setAlmacen(a.getNombre());
-    	return Response.status(200).entity(dra).build();
-    }*/
+
 
     @GET
 	@Path("/{usuario}/valorizaciones")
@@ -70,9 +52,9 @@ public class reportesController {
     	Usuario u = em.find(Usuario.class,usuario);
     	DataReporteAlmacen reportes= new DataReporteAlmacen();
     	ArrayList<String> labels = new ArrayList<>(); 
-    	labels.add("Visitas");//.set(0, "Visitas");
-    	labels.add("Productos");//.set(1, "Productos");
-    	labels.add("Stocks");//set(2, "Stocks");
+    	labels.add("Visitas");
+    	labels.add("Productos");
+    	labels.add("Stocks");
 
     	List<Av> almacenes = u.getAvs1(); 
 
@@ -83,7 +65,7 @@ public class reportesController {
     	
     	
     	for(int i=0;i<almacenes.size(); i++){
-        	reportes.getSeries().add(almacenes.get(i).getId());//set(i, almacenes.get(i).getId());
+        	reportes.getSeries().add(almacenes.get(i).getId());
         	
         	long stockcount = 0;
         	for(Stock s: almacenes.get(i).getStocks()){
@@ -91,10 +73,10 @@ public class reportesController {
         	}
         	ArrayList<Long> data = new ArrayList<>();
         	
-        	data.add(almacenes.get(i).getVisitas());//set(0, almacenes.get(i).getVisitas());
-        	data.add((long)almacenes.get(i).getStocks().size());//set(1, (long)almacenes.get(i).getStocks().size());
-        	data.add(stockcount);//set(2, stockcount);
-        	reportes.getData().add(data);//getData().set(i, data);
+        	data.add(almacenes.get(i).getVisitas());
+        	data.add((long)almacenes.get(i).getStocks().size());
+        	data.add(stockcount);
+        	reportes.getData().add(data);
 
     	}
 
@@ -114,9 +96,6 @@ public class reportesController {
     	
     	List<Av> almacenesusuario = u.getAvs1();
     	Calendar c = Calendar.getInstance();
-    	//c.add(Calendar.DATE, -dias);
-    	//beginDay(c);
-    	
     	
     	//create
     	DataReporteAlmacen reportes= new DataReporteAlmacen();
@@ -131,11 +110,7 @@ public class reportesController {
         	reportes.getSeries().add(t.toString());
     		c.add(Calendar.DATE, -1);
     	}
-    	
-    	//datareporte end.
-		//Timestamp t3= new Timestamp(c.getTimeInMillis());
 
-    	//System.out.println("FECHA DE HOY :: "+t3.toString());
     	for(int i=0; i<almacenesusuario.size();i++){
     		//serie
     		reportes.getLabels().add(almacenesusuario.get(i).getId());
@@ -160,7 +135,6 @@ public class reportesController {
             	q.setParameter("t2", t2);
 
             	
-            	
             	HashMap<Long, Integer> productos = new HashMap<>();
             	Integer init_prod =0;
             	
@@ -180,12 +154,9 @@ public class reportesController {
             		}
 
             	}
-            	stock_fecha.add((long)init_prod);
-
-            	
+            	stock_fecha.add((long)init_prod); 	
     		}
     		reportes.getData().add(stock_fecha);
-	
     	}
 
        	return Response.status(200).entity(reportes).build();
@@ -223,8 +194,7 @@ public class reportesController {
     	return Response.status(200).entity(ret).build();
     }
     
-    
-    
+      
     private static void beginDay(Calendar calendar){
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
@@ -236,7 +206,7 @@ public class reportesController {
 	@Path("/global")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-public Response getReportesGlobal(@QueryParam("productos") Integer productos){
+    public Response getReportesGlobal(@QueryParam("productos") Integer productos){
     	Query q_users= em.createQuery("select count(*) from Usuario u");
     	Query q_prods = em.createQuery("select count(*) from Producto p");
     	Query q_premium = em.createQuery("select count(*) from Usuario u where u.tipocuenta.id>1");
@@ -296,8 +266,7 @@ public Response getReportesGlobal(@QueryParam("productos") Integer productos){
     	DataEstadisticaUsuario deu = new DataEstadisticaUsuario();
     	deu.setCantidad_almacenes(cant_almacenes);
     	deu.setCantidad_colaboradores(colaboradores);
-    	deu.setCantidad_notificaciones(notificaciones);
-    	
+    	deu.setCantidad_notificaciones(notificaciones); 
     	
     	return Response.status(200).entity(deu).build();
     }

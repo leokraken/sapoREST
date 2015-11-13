@@ -47,7 +47,6 @@ public class usuariosController {
     	return new DataPersona();
     }
     
-    //user || admin
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -78,7 +77,6 @@ public class usuariosController {
     	return Response.status(200).entity(ret).build();
     }
 	
-	//user || admin
 	@GET
 	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -181,7 +179,6 @@ public class usuariosController {
     		}else
     			almacen.setPrivada(false);
     	}
-    	//almacen.setPrivada(da.getPrivado());
     	try{
         	em.persist(almacen);
         	em.flush();	
@@ -224,8 +221,5 @@ public class usuariosController {
 		}
 		return Response.status(200).build();
 	}
-	
-	
-	
-	   
+		   
 }

@@ -143,20 +143,23 @@ public class administradorController {
 	
 	@PUT
 	@Path("{id}")
-	@Produces({MediaType.APPLICATION_JSON,MediaType.TEXT_PLAIN})
+	@Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response updateAdministrador(@PathParam(value="id")String id,DataAdministrador dataadmin){
 		Administrador admin = new Administrador();
     	admin.setApellido(dataadmin.getSurname());
     	admin.setNombre(dataadmin.getName());
     	admin.setId(dataadmin.getUsername());	
+    	admin.setPassword(dataadmin.getPassword());
 		em.merge(admin);
-		return Response.status(200).build();
+		return Response.status(200).entity(dataadmin).build();
     }
 
 	@DELETE
 	@Path("{id}")
-	@Produces({MediaType.APPLICATION_JSON,MediaType.TEXT_PLAIN})
-    public Response deleteAdministrador(@PathParam(value="id")String id){
+	@Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)   
+	public Response deleteAdministrador(@PathParam(value="id")String id){
 		Administrador a = em.find(Administrador.class, id);
 		if(a!=null)
 			em.remove(a);
