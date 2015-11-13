@@ -19,6 +19,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -145,12 +146,13 @@ public class administradorController {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateAdministrador(@PathParam(value="id")String id,DataAdministrador dataadmin){
-		Administrador admin = new Administrador();
+    public Response updateAdministrador(@QueryParam("password") Boolean password, @PathParam(value="id")String id,DataAdministrador dataadmin){
+		Administrador admin = em.find(Administrador.class, id);
     	admin.setApellido(dataadmin.getSurname());
     	admin.setNombre(dataadmin.getName());
     	admin.setId(dataadmin.getUsername());	
-    	admin.setPassword(dataadmin.getPassword());
+    	if(password!=null && password)
+    		admin.setPassword(dataadmin.getPassword());
 		em.merge(admin);
 		return Response.status(200).entity(dataadmin).build();
     }

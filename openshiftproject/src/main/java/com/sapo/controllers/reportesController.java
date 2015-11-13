@@ -1,8 +1,10 @@
 package com.sapo.controllers;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,6 +24,8 @@ import javax.ws.rs.core.Response;
 
 import com.sapo.datatypes.DataEstadistica;
 import com.sapo.datatypes.reportes.DataEstadisticaUsuario;
+import com.sapo.datatypes.reportes.DataFraude;
+import com.sapo.datatypes.reportes.DataFraudeGlobal;
 import com.sapo.datatypes.reportes.DataReporteAlmacen;
 import com.sapo.datatypes.reportes.DataReporteProducto;
 import com.sapo.datatypes.reportes.DataReporteStock;
@@ -29,6 +33,7 @@ import com.sapo.entities.Av;
 import com.sapo.entities.ReportesMovimientoStock;
 import com.sapo.entities.Stock;
 import com.sapo.entities.Usuario;
+import com.sapo.utils.StatisticsUtils;
 
 @Stateless
 @LocalBean
@@ -269,6 +274,134 @@ public class reportesController {
     	deu.setCantidad_notificaciones(notificaciones); 
     	
     	return Response.status(200).entity(deu).build();
+    }
+    
+    
+    
+   	public DataReporteAlmacen getMovimientosAllAlmacenes(Integer dias){	
+
+    	if(dias==null)
+    		dias=4;
+    	
+    	Query q = em.createQuery("select a from Av a");
+    	@SuppressWarnings("unchecked")
+		List<Av> almacenes = q.getResultList();
+    	Calendar c = Calendar.getInstance();
+    	
+    	//create
+    	DataReporteAlmacen reportes= new DataReporteAlmacen();
+    	ArrayList<String> labels = new ArrayList<>();
+
+    	reportes.setLabels(labels);
+    	reportes.setSeries(new ArrayList<String>());
+    	reportes.setData(new ArrayList<List<Long>>());
+    	
+    	for(int i=0; i<dias;i++){
+    		Timestamp t = new Timestamp(c.getTimeInMillis());
+        	reportes.getSeries().add(t.toString());
+    		c.add(Calendar.DATE, -1);
+    	}
+
+    	for(int i=0; i<almacenes.size();i++){
+    		//serie
+    		reportes.getLabels().add(almacenes.get(i).getId());
+    		String almacen= almacenes.get(i).getId();
+    		
+    		List<Long> stock_fecha = new ArrayList<>();
+    		
+    		for(int j=0; j<dias; j++){
+    			Calendar cal = Calendar.getInstance();
+    			beginDay(cal);
+    			cal.add(Calendar.DATE, -j);
+    			Timestamp t1= new Timestamp(cal.getTimeInMillis());
+
+    			cal.add(Calendar.DATE, 1);
+    			Timestamp t2= new Timestamp(cal.getTimeInMillis());
+    			
+    			//System.out.println("INTERVALO:"+t1.toString()+t2.toString());
+    			
+    			Query q2 = em.createQuery("SELECT r from ReportesMovimientoStock R where R.av.id=:almacen and R.fecha>=:t1 and R.fecha<:t2 order by R.fecha");
+            	q2.setParameter("almacen", almacen);
+            	q2.setParameter("t1", t1);
+            	q2.setParameter("t2", t2);
+
+            	
+            	HashMap<Long, Integer> productos = new HashMap<>();
+            	Integer init_prod =0;
+            	
+            	@SuppressWarnings("unchecked")
+        		List<ReportesMovimientoStock> rep = q2.getResultList();
+
+            	for(ReportesMovimientoStock r: rep){
+            		Calendar tt = Calendar.getInstance();
+            		tt.setTimeInMillis(r.getFecha().getTime());
+            		beginDay(tt); //truncates
+            		Long key= tt.getTimeInMillis();    		
+            		Long prod = r.getProducto().getId();
+
+            		if(!productos.containsKey(prod)){
+            			productos.put(key, r.getStock());
+            			init_prod+=r.getStock();
+            		}
+
+            	}
+            	stock_fecha.add((long)init_prod);
+    		}
+    		reportes.getData().add(stock_fecha);
+    	}
+
+       	return reportes;
+    }
+    
+    
+    
+    @SuppressWarnings("static-access")
+	@GET
+  	@Path("/fraude/{dias}")
+  	@Consumes(MediaType.APPLICATION_JSON)
+  	@Produces(MediaType.APPLICATION_JSON)
+  	public Response getDatosFraude(@PathParam("dias") Integer dias){
+    	
+    	DataReporteAlmacen dr = getMovimientosAllAlmacenes(dias);
+    	List<String> avs = dr.getLabels();
+    	
+    	List<DataFraude> ret = new ArrayList<>();
+    	
+    	List<Number> promediolist = new ArrayList<>();
+    	for(int i=0; i<avs.size();i++){
+    		List<Long> movs = dr.getData().get(i);
+    		List<Number> movsn= new ArrayList<>();
+    		for(Long a : movs){
+    			movsn.add(a);
+    			promediolist.add(a);
+    		}
+    		
+    		Long high = Collections.max(movs);
+    		Long min = Collections.min(movs);
+
+    		StatisticsUtils stats = new StatisticsUtils();
+    		BigDecimal median= stats.median(movsn);
+    		BigDecimal q1 = stats.quartile1(movsn);
+    		BigDecimal q3 = stats.quartile3(movsn);
+
+    		DataFraude df = new DataFraude();
+    		df.setMedian(median);
+    		df.setQ1(q1);
+    		df.setQ3(q3);
+    		df.setLow(min);
+    		df.setHigh(high);
+    		df.setX(avs.get(i));
+    		ret.add(df);
+    	}
+    	
+    	StatisticsUtils s= new StatisticsUtils();
+    	BigDecimal mean = s.average(promediolist);
+    	
+    	DataFraudeGlobal dfg = new DataFraudeGlobal();
+    	dfg.setLista(ret);
+    	dfg.setMean(mean);
+    	
+    	return Response.status(200).entity(dfg).build();
     }
     
 }
