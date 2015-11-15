@@ -209,6 +209,7 @@ public class almacenesController {
 	@Path("{id}/agregarproductos")
     @Consumes(MediaType.APPLICATION_JSON)
 	public Response agregarProductosAlmacen(@PathParam("id") String id, List<DataStockLite> productos){
+		System.out.println("Add productos...");
 		Av a = em.find(Av.class,id);			
 		for(DataStockLite prod : productos){
 			System.out.println(prod.getProductoID());

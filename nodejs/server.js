@@ -10,8 +10,8 @@ var wordNet = require('wordnet-magic');
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-
-
+//for basurelity of paypal...
+app.use(bodyParser.urlencoded({ extended: true }));
 
 /*CONFIG*/
 var url = "mongodb://tsi2:tsi2@ds043962.mongolab.com:43962/krakenmongo";
@@ -58,9 +58,13 @@ app.post('/mercadolibre/search', function(req,res){
 
 //Dada una lista de productos los agrega a la base mongo y postgresql.
 //[{"id":"MLU430098893", "generico": false, "categoria":1}]
-app.post('/mercadolibre/addproductos', function(req,res){
+app.post('/mercadolibre/addproductos/:tienda', function(req,res){
+	var almacen = req.params.tienda;
+	console.log(almacen);
 	var req1 = req;
-	console.log(req.body);
+	//console.log(req.body);
+	var listaproductos = [];
+
 	function dorequest(index){
 		var Request = unirest.get(ML_API+'/items/'+req.body[index].id)
 			      .type('json')
@@ -73,10 +77,9 @@ app.post('/mercadolibre/addproductos', function(req,res){
 							categoria: req.body[index].categoria,
 							isgenerico:req.body[index].generico,
 							id:1
-							};
+					};
 					var azureRequest =  unirest.post("http://"+SAPO_HOST+"/openshiftproject/rest/productos/create?mongo=false")
 						.type('json')
-						//.headers({"Ocp-Apim-Trace":"true","Ocp-Apim-Subscription-Key":"9f86432ae415401db0383f63ce64c4fe"})
 						.send(dataproducto)
 						.end(function(response){
 							console.log("Producto agregado a la base Postgresql.");
@@ -84,6 +87,15 @@ app.post('/mercadolibre/addproductos', function(req,res){
 							//ajusto id rdbms
 							response1.body.rdbms_id=response.body.id;
 							response1.body.rdbms_producto=response.body;
+							var datastock = { productoID: response.body.id, cantidad: 0 };
+							console.log(datastock);
+							//agrego a la tienda
+							var addProductosReq = unirest.post("http://"+SAPO_HOST+"/openshiftproject/rest/almacenes/"+almacen+"/agregarproductos")
+								.type('json')
+								.send(JSON.stringify([{ "productoID": response.body.id, "cantidad": 0 }]))
+								.end(function(fin){
+									console.log(fin);
+							});
 
 							//mongo
 							var MongoClient = require('mongodb').MongoClient; 
@@ -95,8 +107,6 @@ app.post('/mercadolibre/addproductos', function(req,res){
 							      db.close();
 							    });
 							});
-
-
 						});
 
 			      }
@@ -110,15 +120,14 @@ app.post('/mercadolibre/addproductos', function(req,res){
 		}catch(err){
 		   list.push({"id":req.body[i].id, "status":"error"});   	
 		}
-
 	}
+
 	res.send(list);
-}
-);
+});
 
 //Funciones únicas para administrador.
 /************************************************/
-/*		Templates			*/
+/*						Templates							*/
 /************************************************/
 
 app.get('/algoritmos/templates', function(req,res){
@@ -178,62 +187,13 @@ var Request = unirest.get('http://'+SAPO_HOST+':8080/openshiftproject/rest/almac
 });
 
 
-app.get('/algoritmos/wordnet/:n', function(req,res){
-
-var wn = wordNet("/home/leonardo/Downloads/sqlite-31.db", false);
-//var word = new wn.Word("cat");
-wn.fetchSynset(req.params.n+".n.1").then(function(synset){
-    console.log(synset)
-    synset.getDomains().then(function(domain){
-	//console.log('######');
-	//console.log(domain);
-        ///console.log(util.inspect(domain, null, 3))
-    });
-});
-
-
-wn.fetchSynset(req.params.n+".n.1").then(function(synset){
-    synset.getHypernyms().then(function(hypernym){
-	console.log('####hiperonimo')
-        console.log(hypernym);
-	for(i=0;i<hypernym.length;i++){
-	   console.log(hypernym[i].words);
-	}
-    });
-});
-
-var kiss = new wn.Word("kiss","n");
-kiss.getSynsets(function(err, data){
-    console.log("sinónimos");
-    console.log(data);
-});
-
-
-res.send("");
-/*
-var Request = unirest.get('http://'+SAPO_HOST+':8080/openshiftproject/rest/categorias?genericas=false')
-		.type('json')
-		.end(function (response) {
-	var categorias = response.body;
-	for(i=0; i<categorias.length;i++){
-		
-	}
-
-});
-
-*/
-});
-
-
 
 app.get('/algoritmos/categorias', function(req,res){
 	var Request = unirest.get('http://'+SAPO_HOST+'/openshiftproject/rest/algoritmos/categorias')
 		.type('json')
 		.end(function (response) {
-
 			var natural = require('natural');
 			var classifier = new natural.BayesClassifier();
-
 
 			var cats = response.body;
 			for( i=0; i< cats.length; i++ ){
@@ -251,20 +211,7 @@ app.get('/algoritmos/categorias', function(req,res){
 			console.log(classifier.getClassifications('Sebastián'));
 		});
 
-
-
-/*
-	classifier.addDocument('my unit-tests failed.', 'software');
-	classifier.addDocument('tried the program, but it was buggy.', 'software');
-	classifier.addDocument('the drive has a 2TB capacity.', 'hardware');
-	classifier.addDocument('i need a new power supply.', 'hardware');
-
-	classifier.train();
-
-	console.log(classifier.classify('did the tests pass?'));
-	console.log(classifier.classify('did you buy a new drive?'));*/
-}
-);
+});
 
 /*ALGORITMO PRODUCTOS*/
 app.get('/algoritmos/productos/run', function(req,res){
@@ -274,7 +221,7 @@ app.get('/algoritmos/productos/run', function(req,res){
 	var Request = unirest.get('http://'+SAPO_HOST+'/openshiftproject/rest/algoritmos/productos')
 		.type('json')
 		.end(function (response) {
-		//nombre,descripcion,isgenerico, tags, imagenes, categoria, id
+			//nombre, descripcion, isgenerico, tags, imagenes, categoria, id
 			var natural = require('natural');
 			var classifier = new natural.BayesClassifier();
 			
@@ -304,7 +251,8 @@ app.get('/algoritmos/productos/run', function(req,res){
 				 }  
 			      }
 			   }
-			}else{    //entreno con productos genericos
+			}else{    
+				//entreno con productos genericos
 				if(prods[i].descripcion!=null)
 				   classifier.addDocument(prods[i].descripcion, prods[i].id);
 				if(prods[i].tags.length>0)
@@ -312,9 +260,7 @@ app.get('/algoritmos/productos/run', function(req,res){
 			}//if
 			}//for
 
-			//entreno clasificador
-			classifier.train(); 
-			//console.log(classifier.getClassifications());
+			classifier.train();
 			
 			console.log(umbral);
 			var array = [];
@@ -355,7 +301,7 @@ app.get('/algoritmos/productos/run', function(req,res){
 app.get('/algoritmos/productos', function(req,res){
 	var MongoClient = require('mongodb').MongoClient; 
 	var productoid;
-	MongoClient.connect(url, {native_parser:true}, function(err, db) {
+	MongoClient.connect(url, { native_parser:true }, function(err, db) {
 	    assert.equal(null, err);
 	    db.collection('productos')
 	    .findOne({}, function(err, result) {
@@ -371,9 +317,7 @@ app.get('/algoritmos/productos', function(req,res){
 //ELIMINA PRODUCTO RECOMENDADO
 app.delete('/algoritmos/productos/:id', function(req,res){
 
-}
-);
-
+});
 
 
 app.get('/client', function(req,res){
@@ -384,8 +328,29 @@ app.get('/client', function(req,res){
 
 app.post('/paypal', function(req,res){
 	console.log(req.body);
-	//io.of('/templates').emit('receive', 'server this..');
-	res.send('ok');
+	var transaction = req.body;
+	var usuario = transaction.custom;
+	var tipo_cuenta = transaction.option_selection1;
+	var payment_status = transaction.payment_status;
+	//termino peticion	
+	res.send("");
+	if(payment_status=='Completed'){
+		var getaccounts = unirest.get("http://"+SAPO_HOST+"/openshiftproject/rest/cuentas/").type('json').send()
+				.end(function(ac){
+					console.log(ac.body);
+					for(i=0; i<ac.body.length; i++){
+						if(ac.body[i].nombre == tipo_cuenta){
+							var cuenta = ac.body[i].cuentaID;
+							var updateaccount = unirest.put("http://"+SAPO_HOST+"/openshiftproject/rest/cuentas/update/"+usuario+"/"+cuenta)
+								.type('json')
+								.send()
+								.end(function(fin){});	
+							break;
+						}
+					}
+			});
+	}
+	
 });
 
 
@@ -447,7 +412,8 @@ io.of('/templates')
 	});
 });
 
-io.of('/productos')
+io
+.of('/productos')
 .on('connection', function (socket) {
 	socket.on('sendnotification', function (data) {
 		socket.broadcast.emit('receive', data);
