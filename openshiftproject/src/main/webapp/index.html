@@ -302,9 +302,9 @@ git pull -s recursive -X theirs upstream master</pre>
 <input name="custom" value="leonardo" type="hidden">
 <table>
 <tr><td><input type="hidden" name="on0" value="prices">prices</td></tr><tr><td><select name="os0">
-	<option value="newbie">newbie $1.00 USD</option>
-	<option value="middle">middle $50.00 USD</option>
-	<option value="ghost">ghost $100.00 USD</option>
+	<option value="1">newbie $1.00 USD</option>
+	<option value="2">middle $50.00 USD</option>
+	<option value="3">ghost $100.00 USD</option>
 </select> </td></tr>
 </table>
 <input type="hidden" name="currency_code" value="USD">
@@ -322,6 +322,43 @@ git pull -s recursive -X theirs upstream master</pre>
 <img alt="" border="0" src="https://www.sandbox.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
 </form>
 
+
+<form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_xclick">
+<input type="hidden" name="business" value="36XH9PADYXQDA">
+<input type="hidden" name="lc" value="US">
+<input type="hidden" name="item_name" value="Sapo account">
+<input type="hidden" name="button_subtype" value="services">
+<input type="hidden" name="no_note" value="0">
+<input type="hidden" name="cn" value="Add special instructions to the seller">
+<input type="hidden" name="no_shipping" value="1">
+<input type="hidden" name="rm" value="1">
+<input type="hidden" name="return" value="http://localhost:8080/openshiftproject/rest/almacenes/">
+<input type="hidden" name="cancel_return" value="http://localhost:8080/openshiftproject/rest/usuarios/">
+<input type="hidden" name="currency_code" value="USD">
+<input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynowCC_LG.gif:NonHosted">
+<input type="hidden" name="notify_url" value="http://nodejs4tsi2-backendrs.rhcloud.com/paypal">
+
+<input name="custom" value="leonardo" type="hidden">
+
+<table>
+<tr><td><input type="hidden" name="on0" value="prices">prices</td></tr><tr><td><select name="os0">
+	<option value="2">newbie $1.00 USD</option>
+	<option value="3">middle $50.00 USD</option>
+	<option value="4">ghost $100.00 USD</option>
+</select> </td></tr>
+</table>
+<input type="hidden" name="currency_code" value="USD">
+<input type="hidden" name="option_select0" value="2">
+<input type="hidden" name="option_amount0" value="1.00">
+<input type="hidden" name="option_select1" value="3">
+<input type="hidden" name="option_amount1" value="50.00">
+<input type="hidden" name="option_select2" value="4">
+<input type="hidden" name="option_amount2" value="70.00">
+<input type="hidden" name="option_index" value="0">
+<input type="image" src="https://www.sandbox.paypal.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.sandbox.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
 
 
 

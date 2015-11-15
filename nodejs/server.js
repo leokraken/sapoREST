@@ -335,20 +335,10 @@ app.post('/paypal', function(req,res){
 	//termino peticion	
 	res.send("");
 	if(payment_status=='Completed'){
-		var getaccounts = unirest.get("http://"+SAPO_HOST+"/openshiftproject/rest/cuentas/").type('json').send()
-				.end(function(ac){
-					console.log(ac.body);
-					for(i=0; i<ac.body.length; i++){
-						if(ac.body[i].nombre == tipo_cuenta){
-							var cuenta = ac.body[i].cuentaID;
-							var updateaccount = unirest.put("http://"+SAPO_HOST+"/openshiftproject/rest/cuentas/update/"+usuario+"/"+cuenta)
-								.type('json')
-								.send()
-								.end(function(fin){});	
-							break;
-						}
-					}
-			});
+		var updateaccount = unirest.put("http://"+SAPO_HOST+"/openshiftproject/rest/cuentas/update/"+usuario+"/"+tipo_cuenta)
+			.type('json')
+			.send()
+			.end(function(fin){});
 	}
 	
 });
