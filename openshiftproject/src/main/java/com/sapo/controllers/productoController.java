@@ -279,7 +279,7 @@ public class productoController {
 		try{
 			Producto p = em.find(Producto.class, id);
 			List<String> images_old = new ArrayList<>();
-			if(p.getTags()!=null && !p.getImagenes().equals("")){
+			if(p.getImagenes()!=null && !p.getImagenes().equals("")){
 				images_old= Arrays.asList(p.getImagenes().split(","));
 			}
 			HashSet<String> set = new HashSet<>(images_old);
