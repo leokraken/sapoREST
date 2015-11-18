@@ -1,7 +1,6 @@
 package com.sapo.controllers;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -22,9 +21,9 @@ import javax.ws.rs.core.Response;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.sapo.datatypes.DataImage;
 import com.sapo.datatypes.DataResponse;
 import com.sapo.entities.Producto;
-import com.sun.jersey.multipart.FormDataParam;
 
 @Stateless
 @LocalBean
@@ -50,16 +49,21 @@ public class imageController {
     
 
 //curl -X POST http://localhost:8080/openshiftproject/rest/imagenes/upload/7 -H 'Content-Type: application/octet-stream' --data-binary @galli.jpg
+   //(echo -n '{"image": "'; base64 ./galli.jpg; echo '"}') | curl -H "Content-Type: application/json" -d @-  http://localhost:3000/data
+   //(echo -n '{"imagen": "'; base64 ./galli.jpg; echo '"}') | curl -H "Content-Type: application/json" -d @-  http://localhost:8080/openshiftproject/rest/imagenes/upload/7
+
+
     @POST
 	@Path("/upload/{producto}")
-	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response saveImage(@PathParam("producto") Long producto,  byte[] file){	
+	public Response saveImage(@PathParam("producto") Long producto,  DataImage file){	
     	Producto p = em.find(Producto.class, producto);
-    	System.out.println(file.toString());
+    	//System.out.println(file.getImagen());
     	
     	try {
-			Map up = cloudinary.uploader().upload(file, ObjectUtils.asMap("resource_type", "auto"));
+			@SuppressWarnings("rawtypes")
+			Map up = cloudinary.uploader().upload(file.getImagen(), ObjectUtils.asMap("resource_type", "auto"));
 			String url = (String) up.get("url");
 			List<String> images = new ArrayList<>();
 			images.add(url);
