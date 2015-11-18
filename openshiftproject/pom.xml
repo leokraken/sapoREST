@@ -32,13 +32,6 @@
 			<version>1.2.2</version>
 		</dependency>
 		
-		<dependency>
-			<groupId>com.sun.jersey.contribs</groupId>
-			<artifactId>jersey-multipart</artifactId>
-			<version>1.19</version>
-		</dependency>
-		
-		
     </dependencies>
 
 <profiles>

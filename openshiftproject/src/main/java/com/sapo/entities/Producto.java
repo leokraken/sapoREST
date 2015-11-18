@@ -207,8 +207,8 @@ public class Producto implements Serializable {
 		dp.setNombre(nombre);
 		
 		List<String> images = new ArrayList<>();
-		if(tags!=null && !tags.equals("")){
-			images= Arrays.asList(tags.split(","));
+		if(imagenes!=null && !imagenes.equals("")){
+			images= Arrays.asList(imagenes.split(","));
 		}	
 		List<String> taggs = new ArrayList<>();
 		if(tags!=null && !tags.equals("")){
