@@ -23,6 +23,8 @@ public class Av implements Serializable {
 	
 	private Long visitas = (long) 0;
 	
+	private String css;
+	
 	//bi-directional many-to-one association to Comentario
 	@OneToMany(mappedBy="av")
 	private List<Comentario> comentarios;
@@ -221,6 +223,14 @@ public class Av implements Serializable {
 		comentario.setAv(null);
 
 		return comentario;
+	}
+
+	public String getCss() {
+		return css;
+	}
+
+	public void setCss(String css) {
+		this.css = css;
 	}
 	
 }

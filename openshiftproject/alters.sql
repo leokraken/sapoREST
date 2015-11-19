@@ -88,5 +88,5 @@ create table producto_usuario_tienda_notificacion(
 --listo
 
 
-
+alter table avs add column css varchar;
 

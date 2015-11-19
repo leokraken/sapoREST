@@ -9,6 +9,7 @@ public class DataAlmacen {
 	private String descripcion;
 	private String usuario;
 	private Boolean privado;
+	private String css;
 	
 	List<DataPersona> colaboradores;
 	List<DataCategoria> categorias;
@@ -65,6 +66,11 @@ public class DataAlmacen {
 	public void setColaboradores(List<DataPersona> colaboradores) {
 		this.colaboradores = colaboradores;
 	}
-	
+	public String getCss() {
+		return css;
+	}
+	public void setCss(String css) {
+		this.css = css;
+	}
 	
 }

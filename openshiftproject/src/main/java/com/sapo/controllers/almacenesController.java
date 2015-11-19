@@ -123,6 +123,7 @@ public class almacenesController {
 		da.setNombre(a.getNombre());
 		da.setUsuario(a.getUsuario().getId());
 		da.setPrivado(a.getPrivada());
+		da.setCss(a.getCss());
 		
 		List<DataStock> stock = new ArrayList<DataStock>();
 		List<DataCategoria> categorias = new ArrayList<DataCategoria>();
@@ -574,4 +575,25 @@ public class almacenesController {
 	}
 		
 
+	@PUT
+	@Path("{id}/css")
+	@Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+	public Response updateAlmacenCss(@PathParam("id") String id, DataAlmacen da){
+		
+		Av a = em.find(Av.class,id);
+		if(a==null){
+			DataResponse dr = new DataResponse();
+			dr.setMensaje("No existe almacen...");
+			return Response.status(400).build();
+		
+		}else{			
+			a.setCss(da.getCss());;
+
+		}			
+		DataResponse dr = new DataResponse();
+		dr.setMensaje("CSS almacen actualizado");
+		return Response.status(200).entity(dr).build();
+	}
+	
 }
