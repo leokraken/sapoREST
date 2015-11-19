@@ -89,4 +89,35 @@ create table producto_usuario_tienda_notificacion(
 
 
 alter table avs add column css varchar;
+--listo
+
+
+create table reporte_ganancias(
+id serial,
+usuarioid varchar references usuarios(id),
+fecha timestamp default now(),
+tipo_cuenta integer references tipo_cuenta(id),
+monto numeric);
+
+insert into reporte_ganancias(usuarioid, tipo_cuenta, monto) values('leo', 2, 50);
+insert into reporte_ganancias(usuarioid, tipo_cuenta, monto) values('leo', 3, 100);
+insert into reporte_ganancias(usuarioid, tipo_cuenta, monto, fecha) values('leo', 3, 100, now()- '1 day'::interval);
+insert into reporte_ganancias(usuarioid, tipo_cuenta, monto, fecha) values('leo', 2, 50, now()- '1 day'::interval);
+
+CREATE OR REPLACE FUNCTION trigger_ganancias() returns TRIGGER AS $$
+DECLARE
+	monto integer;
+begin
+	select precio into monto from tipo_cuenta where id=new.tipo_cuenta;
+	IF(old.tipo_cuenta <> new.tipo_cuenta) THEN
+		insert into reporte_ganancias(usuarioid, tipo_cuenta, monto) values(old.id, new.tipo_cuenta, monto);
+    END IF;
+	return NEW;
+END
+$$ language plpgsql;
+
+CREATE TRIGGER trigger_ganancias 
+before UPDATE on usuarios 
+for each row execute procedure trigger_ganancias();
+
 

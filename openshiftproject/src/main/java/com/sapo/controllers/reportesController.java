@@ -23,6 +23,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.sapo.datatypes.DataEstadistica;
+import com.sapo.datatypes.DataGanancias;
 import com.sapo.datatypes.reportes.DataEstadisticaUsuario;
 import com.sapo.datatypes.reportes.DataFraude;
 import com.sapo.datatypes.reportes.DataFraudeGlobal;
@@ -30,6 +31,7 @@ import com.sapo.datatypes.reportes.DataReporteAlmacen;
 import com.sapo.datatypes.reportes.DataReporteProducto;
 import com.sapo.datatypes.reportes.DataReporteStock;
 import com.sapo.entities.Av;
+import com.sapo.entities.ReporteGananciasVista;
 import com.sapo.entities.ReportesMovimientoStock;
 import com.sapo.entities.Stock;
 import com.sapo.entities.Usuario;
@@ -403,5 +405,25 @@ public class reportesController {
     	
     	return Response.status(200).entity(dfg).build();
     }
+    
+    @GET
+   	@Path("/ganancias")
+   	@Consumes(MediaType.APPLICATION_JSON)
+   	@Produces(MediaType.APPLICATION_JSON)
+   	public Response getGanancias(){
+    	Query q = em.createQuery("select e from ReporteGananciasVista e");
+    	@SuppressWarnings("unchecked")
+		List<ReporteGananciasVista> list = q.getResultList();
+    	DataGanancias ret = new DataGanancias();
+    	ret.setFechas(new ArrayList<>());
+    	ret.setMonto(new ArrayList<>());
+    	for(ReporteGananciasVista r : list){
+    		ret.getFechas().add(r.getFecha().toString());
+    		ret.getMonto().add(r.getSum());
+    	}
+    	
+    	return Response.status(200).entity(ret).build();
+    }	
+    
     
 }
