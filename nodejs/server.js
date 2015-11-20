@@ -3,9 +3,7 @@ var bodyParser = require("body-parser");
 var app = express();
 var assert = require('assert');
 var unirest = require('unirest');
-//var WebSocket = require('ws');
 
-var wordNet = require('wordnet-magic');
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());

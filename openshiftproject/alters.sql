@@ -120,4 +120,6 @@ CREATE TRIGGER trigger_ganancias
 before UPDATE on usuarios 
 for each row execute procedure trigger_ganancias();
 
+create view reporte_ganancias_vista as select fecha::date, sum(monto) from reporte_ganancias group by fecha::date;
+
 
