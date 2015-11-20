@@ -5,8 +5,18 @@ var assert = require('assert');
 var unirest = require('unirest');
 
 
+var allowCrossDomain = function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+}
+
+
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+app.use(allowCrossDomain);
+
 
 //for basurelity of paypal...
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -14,9 +24,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 /*CONFIG*/
 var url = "mongodb://tsi2:tsi2@ds043962.mongolab.com:43962/krakenmongo";
 var WS_PORT = 8080;
-var SAPO_HOST = "sapo-backendrs.rhcloud.com";
-//var SAPO_HOST = 'localhost:8080';
+var SAPO_HOST = process.env.SAPO_HOST || "sapo-backendrs.rhcloud.com";
 var ML_API = 'https://api.mercadolibre.com';
+
+
 
 
 /*WEBSOCKET CLIENT*/
@@ -186,30 +197,6 @@ var Request = unirest.get('http://'+SAPO_HOST+':8080/openshiftproject/rest/almac
 
 
 
-app.get('/algoritmos/categorias', function(req,res){
-	var Request = unirest.get('http://'+SAPO_HOST+'/openshiftproject/rest/algoritmos/categorias')
-		.type('json')
-		.end(function (response) {
-			var natural = require('natural');
-			var classifier = new natural.BayesClassifier();
-
-			var cats = response.body;
-			for( i=0; i< cats.length; i++ ){
-			  console.log(cats[i].categoriaid);
-			  var prods = cats[i].productos;
-			  for( j=0; j<prods.length; j++){
-			    console.log(prods[j].descripcion);
-			    if(prods[j].descripcion!=null)
-			    	classifier.addDocument(prods[j].descripcion, cats[i].categoriaid);
-			    if(prods[j].nombre!=null)
-			    	classifier.addDocument(prods[j].nombre, cats[i].categoriaid);
-			  }
-			}
-			classifier.train();
-			console.log(classifier.getClassifications('Sebastián'));
-		});
-
-});
 
 /*ALGORITMO PRODUCTOS*/
 app.get('/algoritmos/productos/run', function(req,res){
@@ -312,15 +299,10 @@ app.get('/algoritmos/productos', function(req,res){
 }
 );
 
-//ELIMINA PRODUCTO RECOMENDADO
-app.delete('/algoritmos/productos/:id', function(req,res){
-
-});
-
 
 app.get('/client', function(req,res){
 	console.log('sticky');
-	io.of('/templates').emit('receive', 'server this..');
+	//io.of('/templates').emit('receive', 'server this..');
 	res.send('ok');
 });
 
