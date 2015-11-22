@@ -1,16 +1,24 @@
 package com.sapo.datatypes.reportes;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 
-public class DataFraude {
+public class DataFraude implements Comparable<DataFraude> {
 
-	private String x;
+	private Integer x;
 	private Long low;
 	private BigDecimal median;
 	private BigDecimal q1;
 	private BigDecimal q3;
 	private Long high;
+	private String almacen;
 	
+	public String getAlmacen() {
+		return almacen;
+	}
+	public void setAlmacen(String almacen) {
+		this.almacen = almacen;
+	}
 	public Long getLow() {
 		return low;
 	}
@@ -41,11 +49,25 @@ public class DataFraude {
 	public void setHigh(Long high) {
 		this.high = high;
 	}
-	public String getX() {
+	public Integer getX() {
 		return x;
 	}
-	public void setX(String x) {
+	public void setX(Integer x) {
 		this.x = x;
 	}
+	@Override
+	public int compareTo(DataFraude o) {
+		Double o1 = this.getMedian().doubleValue();
+		return o1.compareTo(o.getMedian().doubleValue());
+	}
+	
+	public static Comparator<DataFraude> comparador = new Comparator<DataFraude>() {
+	
+	@Override
+	public int compare(DataFraude o1, DataFraude o2) {
+		return o2.compareTo(o1);
+	}
+	};
+	
 	
 }

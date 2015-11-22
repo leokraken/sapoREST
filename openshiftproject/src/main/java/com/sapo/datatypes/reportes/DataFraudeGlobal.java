@@ -20,4 +20,5 @@ public class DataFraudeGlobal {
 	public void setMean(BigDecimal mean) {
 		this.mean = mean;
 	}	
+	
 }

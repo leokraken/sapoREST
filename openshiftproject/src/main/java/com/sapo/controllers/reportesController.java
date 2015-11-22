@@ -391,8 +391,9 @@ public class reportesController {
     		df.setQ1(q1);
     		df.setQ3(q3);
     		df.setLow(min);
-    		df.setHigh(high);
-    		df.setX(avs.get(i));
+    		df.setHigh(high); 		
+    		df.setX(i); 		
+    		df.setAlmacen(avs.get(i));
     		ret.add(df);
     	}
     	
@@ -400,9 +401,9 @@ public class reportesController {
     	BigDecimal mean = s.average(promediolist);
     	
     	DataFraudeGlobal dfg = new DataFraudeGlobal();
+    	ret.sort(new DataFraude().comparador);
     	dfg.setLista(ret);
-    	dfg.setMean(mean);
-    	
+    	dfg.setMean(mean);    	
     	return Response.status(200).entity(dfg).build();
     }
     

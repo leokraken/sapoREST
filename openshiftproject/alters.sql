@@ -122,4 +122,32 @@ for each row execute procedure trigger_ganancias();
 
 create view reporte_ganancias_vista as select fecha::date, sum(monto) from reporte_ganancias group by fecha::date;
 
+--fin
+
+CREATE OR REPLACE FUNCTION populate_stock(fechar timestamp, cantidad int, rango int) returns boolean AS $$
+DECLARE
+  random_cant integer;
+  random_stock record;
+  count_stock integer;
+  i integer;
+begin
+	count_stock:=(select count(*) from stock);
+	
+	for i in 1 .. cantidad
+	loop
+		random_cant:= (select floor((random() * rango) + 1)::int);
+		select * into random_stock from stock offset random() * count_stock limit 1;
+		raise notice '%, %, %', random_stock.id_av, random_stock.id_producto, count_stock;
+		update stock set cantidad=random_cant where id_av=random_stock.id_av and id_producto=random_stock.id_producto;
+			
+	end loop;
+	
+	update reportes_movimiento_stock set fecha= fechar where fecha> (now()-interval '5 seconds')::timestamp without time zone;
+	return true;
+	--raise notice "almacen %, producto%, cantidad%"
+END
+$$ language plpgsql;
+
+
+
 
