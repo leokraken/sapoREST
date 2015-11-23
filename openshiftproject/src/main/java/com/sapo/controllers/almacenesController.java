@@ -276,13 +276,7 @@ public class almacenesController {
 		List<DataStockProducto> productos = new ArrayList<DataStockProducto>();
 		for(Stock s : a.getStocks()){
 			if(s.getProducto().getCategoria().getId().equals(idcat)){
-				DataProducto dp = new DataProducto();
-				dp.setID(s.getProducto().getId());
-				dp.setDescripcion(s.getProducto().getDescripcion());
-				dp.setIsgenerico(s.getProducto().getGenerico());
-				dp.setNombre(s.getProducto().getNombre());
-				dp.setCategoria(s.getProducto().getCategoria().getId());
-				
+				DataProducto dp = s.getProducto().getDataProducto();
 				DataStockProducto dsp = new DataStockProducto();
 				dsp.setProducto(dp);
 				dsp.setCantidad(s.getCantidad());
