@@ -215,13 +215,13 @@ public class reportesController {
 	@Produces(MediaType.APPLICATION_JSON)
     public Response getReportesGlobal(@QueryParam("productos") Integer productos){
     	Query q_users= em.createQuery("select count(*) from Usuario u");
-    	Query q_prods = em.createQuery("select count(*) from Producto p");
+    	Query q_prods = em.createQuery("select count(*) from Producto p where p.generico=true");
     	Query q_premium = em.createQuery("select count(*) from Usuario u where u.tipocuenta.id>1");
     	Query q_categorias = em.createQuery("select count(*) from Categoria c where c.generica=true");
     	
     	if(productos==null)
     		productos= 10;
-    	Query q_productos = em.createQuery("select s.producto.id, s.producto.nombre, s.producto.descripcion, count(*) from Stock s group by s.producto.id, s.producto.nombre, s.producto.descripcion order by count(s.producto.id) DESC");
+    	Query q_productos = em.createQuery("select s.producto.id, s.producto.nombre, s.producto.descripcion, count(*) from Stock s where s.producto.generico=true group by s.producto.id, s.producto.nombre, s.producto.descripcion order by count(s.producto.id) DESC");
 
     	Long cantidad_u = (Long) q_users.getSingleResult();
     	Long cantidad_p = (Long) q_prods.getSingleResult();

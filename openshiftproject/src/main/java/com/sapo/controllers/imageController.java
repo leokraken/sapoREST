@@ -12,6 +12,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -52,14 +53,22 @@ public class imageController {
    //(echo -n '{"image": "'; base64 ./galli.jpg; echo '"}') | curl -H "Content-Type: application/json" -d @-  http://localhost:3000/data
    //(echo -n '{"imagen": "'; base64 ./galli.jpg; echo '"}') | curl -H "Content-Type: application/json" -d @-  http://localhost:8080/openshiftproject/rest/imagenes/upload/7
 
+    @GET
+	@Path("/dataimagen")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response dataImage(){	
+    return Response.status(200).entity(new DataImage()).build();
+    }
+    
 
     @POST
 	@Path("/upload/{producto}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response saveImage(@PathParam("producto") Long producto,  DataImage file){	
+
     	Producto p = em.find(Producto.class, producto);
-    	//System.out.println(file.getImagen());
     	
     	try {
 			@SuppressWarnings("rawtypes")
